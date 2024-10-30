@@ -45,7 +45,7 @@ class BatchService:
         self.data = []
         
 
-    def clean_old_exports(self, clean_after=60*60):
+    def clean_old_exports(self, clean_after=60):
         """
         Removes batch files older than the specified `clean_after` interval.
         

@@ -28,10 +28,12 @@ class Worker:
             time.sleep(self.streaming_service.interval)
 
     def _batch_loop(self):
+        self.batch_service.clean_old_exports()
         while self.keep_running:
             time.sleep(self.batch_service.interval)
             while not self.data_queue.empty():
                 self.batch_service.data.append(self.data_queue.get())
             self.batch_service.export_batch()
             self.batch_service.clean_old_exports()
+            print("N Records: ", self.streaming_service.n_records_pushed)
 
