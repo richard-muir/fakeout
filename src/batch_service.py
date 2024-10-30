@@ -39,9 +39,10 @@ class BatchService:
         is derived from `self.filename_stem` with the current UTC timestamp appended.
         """
         now = datetime.now(pytz.utc).strftime(self.datetime_format_string)
-        self.path += f'_{now}.json'
-        with open(self.path, 'w') as f:
+        output_path = self.path + f'_{now}.json'
+        with open(output_path, 'w') as f:
             json.dump(self.data, f, indent=4)
+        self.data = []
         
 
     def clean_old_exports(self, clean_after=60*60):
