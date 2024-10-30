@@ -13,6 +13,7 @@ class DataGenerator:
     """
     
     def __init__(self, config: Config) -> None:
+        self.datetime_format_string = config.datetime_format_string
         self.data_description = config.data_description
         self.keep_on_swimming = True
         self.datatype_lookup = {
@@ -50,7 +51,7 @@ class DataGenerator:
     def _generate_datetime_data(self) -> str:
         """Generate the current UTC datetime."""
         now = datetime.now(pytz.utc)
-        return {'datetime': now.strftime(self.config.datetime_format_string)}
+        return {'datetime': now.strftime(self.datetime_format_string)}
     
     def _generate_categorical_data(
             self, 

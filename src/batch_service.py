@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 import os
 
@@ -23,6 +23,7 @@ class BatchService:
             config (dict): Configuration dictionary for batch settings.
             batch_path (str): Directory path for saving batch files. Defaults to '../public'.
         """
+        self.datetime_format_string = config.datetime_format_string
         self.interval = config.batch_interval
         self.filename_stem = config.batch_file_name
         self.batch_path = batch_path
@@ -37,7 +38,7 @@ class BatchService:
         The batch is saved in the directory specified by `self.batch_path`, and the filename
         is derived from `self.filename_stem` with the current UTC timestamp appended.
         """
-        now = datetime.now(pytz.utc).strftime(self.config.datetime_format_string)
+        now = datetime.now(pytz.utc).strftime(self.datetime_format_string)
         self.path += f'_{now}.json'
         with open(self.path, 'w') as f:
             json.dump(self.data, f, indent=4)
@@ -54,7 +55,7 @@ class BatchService:
         and deletes files that are older than the calculated cutoff time.
         """
         now = datetime.now(pytz.utc)
-        cutoff_time = now - datetime.timedelta(seconds=clean_after)
+        cutoff_time = now - timedelta(seconds=clean_after)
 
         # Iterate through files in the folder
         for filename in os.listdir(self.batch_path):
@@ -70,7 +71,7 @@ class BatchService:
         """Extracts and returns the datetime object from the filename."""
         try:
             timestamp_str = filename.split('_')[-1].replace('.json', '')
-            return datetime.strptime(timestamp_str, self.config.datetime_format_string).astimezone(pytz.utc)
+            return datetime.strptime(timestamp_str, self.datetime_format_string).astimezone(pytz.utc)
         except ValueError:
             print(f"Could not parse timestamp from filename: {filename}")
             return None
