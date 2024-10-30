@@ -26,7 +26,7 @@ class Config:
         self.streaming_interval = None
         self.batch_file_name = None
         self.batch_interval = None
-        self.data_records = []
+        self.data_description = []
         self.load_config()
 
     def load_config(self):
@@ -45,4 +45,4 @@ class Config:
             self.streaming_interval = config.get('streaming', {}).get('interval')
             self.batch_file_name = config.get('batch', {}).get('file_name')
             self.batch_interval = config.get('batch', {}).get('interval')
-            self.data_records = config.get('data_records', [])
+            self.data_description = config.get('data_description', [])
