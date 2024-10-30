@@ -14,8 +14,8 @@ class BatchService:
         path (str): Complete path for the batch file, including the filename stem.
         data (list): List of data entries to be exported in each batch.
     """
-    
-    def __init__(self, config, batch_path='../public'):
+
+    def __init__(self, config, batch_path='public'):
         """
         Initializes the BatchService with configuration and setup paths for export.
         
@@ -23,8 +23,8 @@ class BatchService:
             config (dict): Configuration dictionary for batch settings.
             batch_path (str): Directory path for saving batch files. Defaults to '../public'.
         """
-        self.interval = config['batch']['interval']
-        self.filename_stem = config['batch']['file_name']
+        self.interval = config.batch_interval
+        self.filename_stem = config.batch_file_name
         self.batch_path = batch_path
         self.path = os.path.join(batch_path, self.filename_stem)
         self.data = []
@@ -37,7 +37,7 @@ class BatchService:
         The batch is saved in the directory specified by `self.batch_path`, and the filename
         is derived from `self.filename_stem` with the current UTC timestamp appended.
         """
-        now = datetime.now(pytz.utc).isoformat()
+        now = datetime.now(pytz.utc).strftime(self.config.datetime_format_string)
         self.path += f'_{now}.json'
         with open(self.path, 'w') as f:
             json.dump(self.data, f, indent=4)
@@ -70,7 +70,7 @@ class BatchService:
         """Extracts and returns the datetime object from the filename."""
         try:
             timestamp_str = filename.split('_')[-1].replace('.json', '')
-            return datetime.fromisoformat(timestamp_str).astimezone(pytz.utc)
+            return datetime.strptime(timestamp_str, self.config.datetime_format_string).astimezone(pytz.utc)
         except ValueError:
             print(f"Could not parse timestamp from filename: {filename}")
             return None

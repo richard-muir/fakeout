@@ -11,7 +11,7 @@ class StreamingService:
             config (dict): Configuration dictionary for batch settings.
             batch_path (str): Directory path for saving batch files. Defaults to '../public'.
         """
-        self.interval = config['streaming']['interval']
+        self.interval = config.streaming_interval
 
     def push(self, data):
         print(data)

@@ -1,6 +1,6 @@
 {
     "streaming" : {
-        "interval" : 5,
+        "interval" : 1,
         "service" : "pubsub",
         "connection_creds" : {
             "project_id": "my-gcp-project",
@@ -10,7 +10,7 @@
     },
     "batch" : {
         "file_name" : "data_batch",
-        "interval" : 900
+        "interval" : 10
     },
     "data_description": [
       {

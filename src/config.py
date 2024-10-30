@@ -28,6 +28,7 @@ class Config:
         self.batch_interval = None
         self.data_description = []
         self.load_config()
+        self.datetime_format_string = '%Y%m%d %H%M%S %f %z'
 
     def load_config(self):
         """

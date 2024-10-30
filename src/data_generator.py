@@ -50,7 +50,7 @@ class DataGenerator:
     def _generate_datetime_data(self) -> str:
         """Generate the current UTC datetime."""
         now = datetime.now(pytz.utc)
-        return {'datetime': now.isoformat()}
+        return {'datetime': now.strftime(self.config.datetime_format_string)}
     
     def _generate_categorical_data(
             self, 
