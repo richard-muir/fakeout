@@ -42,7 +42,16 @@ class Config:
         """
         with open(self.config_file, 'r') as file:
             config = json.load(file)
-            self.streaming_interval = config.get('streaming', {}).get('interval')
-            self.batch_file_name = config.get('batch', {}).get('file_name')
-            self.batch_interval = config.get('batch', {}).get('interval')
-            self.data_description = config.get('data_description', [])
+
+            config_errors = self._validate_config()
+            if config_errors:
+                raise Exception(config_errors)
+            else:
+                self.streaming_interval = config.get('streaming', {}).get('interval')
+                self.batch_file_name = config.get('batch', {}).get('file_name')
+                self.batch_interval = config.get('batch', {}).get('interval')
+                self.data_description = config.get('data_description', [])
+
+    def _validate_config(self):
+        """Validate the configuration, or at least, it will do."""
+        return []
