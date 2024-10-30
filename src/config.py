@@ -40,17 +40,9 @@ class Config:
             FileNotFoundError: If the configuration file is not found.
             json.JSONDecodeError: If there is an error decoding the JSON file.
         """
-        try:
-            with open(self.config_file, 'r') as file:
-                config = json.load(file)
-                self.streaming_interval = config.get('streaming', {}).get('interval')
-                self.batch_file_name = config.get('batch', {}).get('file_name')
-                self.batch_interval = config.get('batch', {}).get('interval')
-                self.data_records = config.get('data_records', [])
-
-        except FileNotFoundError:
-            print(f"Configuration file '{self.config_file}' not found.")
-            # Handle error or set defaults
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON from '{self.config_file}'.")
-            # Handle error or set defaults
+        with open(self.config_file, 'r') as file:
+            config = json.load(file)
+            self.streaming_interval = config.get('streaming', {}).get('interval')
+            self.batch_file_name = config.get('batch', {}).get('file_name')
+            self.batch_interval = config.get('batch', {}).get('interval')
+            self.data_records = config.get('data_records', [])
