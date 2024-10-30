@@ -1,0 +1,18 @@
+{
+    "streaming_interval": 5, 
+    "data_records": [
+      {
+        "name": "sensor_id",
+        "data_type": "string",
+        "allowable_values": ["sensor_1", "sensor_2", "sensor_3"]
+      },
+      {
+        "name": "value",
+        "data_type": "float",
+        "allowable_values": [0.0, 100.0] 
+      }
+    ],
+    "batch_file_name": "data_batch",
+    "batch_interval": 15             
+  }
+  

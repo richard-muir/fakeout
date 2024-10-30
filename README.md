@@ -23,6 +23,8 @@ fake-out/
 │   ├── batch_export.py         # Handles batch export of accumulated data
 │   └── main.py                 # Entry point of the application
 │
+├── public/                     # Location where the batch files are stored
+│
 ├── tests/                     # Directory for unit tests
 │   ├── __init__.py            # Makes tests a package
 │   └── test_data_generator.py  # Tests for the data generator
