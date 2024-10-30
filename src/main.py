@@ -1,11 +1,11 @@
 import os
 import signal
 import sys
-from src.data_generator import DataGenerator
-from src.streaming_service import StreamingService
-from src.batch_service import BatchService
-from src.worker import Worker
-from src.config import Config
+from data_generator import DataGenerator
+from streaming_service import StreamingService
+from batch_service import BatchService
+from worker import Worker
+from config import Config
 
 
 def signal_handler(sig, frame):
