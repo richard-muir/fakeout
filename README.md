@@ -21,14 +21,16 @@ fake-out/
 │   ├── config.py              # Load and manage the JSON config
 │   ├── data_generator.py       # Logic for generating fake data
 │   ├── streaming_service.py     # Handles the streaming of data
-│   ├── batch_export.py         # Handles batch export of accumulated data
-│   └── main.py                 # Entry point of the application
+│   ├── batch_service.py         # Handles batch export of accumulated data
+│   ├── worker.py                # Coordinates the data_generator, streaming_service, and batch_service
+│   ├── main.py                 # Entry point of the application
+│   └── tests/                     # Directory for unit tests
+│        ├── __init__.py            # Makes tests a package
+│        └── test_data_generator.py  # Tests for the data generator
+│        └── test_config.py            # Tests for the config class
 │
 ├── public/                     # Location where the batch files are stored
 │
-├── tests/                     # Directory for unit tests
-│   ├── __init__.py            # Makes tests a package
-│   └── test_data_generator.py  # Tests for the data generator
 │
 ├── Dockerfile                  # Dockerfile for containerization
 ├── requirements.txt            # Project dependencies
