@@ -30,9 +30,9 @@ class Worker:
     def _batch_loop(self):
         while self.keep_running:
             time.sleep(self.batch_service.interval)
-            batch_data = []
+            self.batch_service.data = []
             while not self.data_queue.empty():
-                batch_data.append(self.data_queue.get())
-            self.batch_service.export_batch(batch_data)
+                self.batch_service.data.append(self.data_queue.get())
+            self.batch_service.export_batch()
             self.batch_service.clean_old_exports()
 
