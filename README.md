@@ -13,6 +13,7 @@ Fake Out is a Python application that generates fake streaming data and periodic
 
 ## Project Structure
 
+```
 fake-out/
 │
 ├── src/                       # Source code directory
@@ -33,7 +34,7 @@ fake-out/
 ├── requirements.txt            # Project dependencies
 ├── README.md                   # Project documentation
 └── config.json                 # Example JSON config file
-
+```
 
 
 
