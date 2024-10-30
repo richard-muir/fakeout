@@ -1,5 +1,11 @@
 {
-    "streaming_interval": 5, 
+    "streaming" : {
+        "interval" : 5    
+    },
+    "batch" : {
+        "file_name" : "data_batch",
+        "interval" : 900
+    },
     "data_records": [
       {
         "name": "sensor_id",
@@ -11,8 +17,6 @@
         "data_type": "float",
         "allowable_values": [0.0, 100.0] 
       }
-    ],
-    "batch_file_name": "data_batch",
-    "batch_interval": 15             
+    ]            
   }
   
