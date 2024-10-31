@@ -52,6 +52,8 @@ class Config:
                 self.batch_file_name = config.get('batch', {}).get('file_name')
                 self.batch_interval = config.get('batch', {}).get('interval')
                 self.data_description = config.get('data_description', [])
+                self.streaming_service = config.get('streaming', {}).get('service')
+                self.streaming_creds = config.get('streaming', {}).get('connection_creds')
 
     def _validate_config(self):
         """Validate the configuration, or at least, it will do."""

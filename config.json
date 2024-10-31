@@ -3,9 +3,9 @@
         "interval" : 1,
         "service" : "pubsub",
         "connection_creds" : {
-            "project_id": "my-gcp-project",
-            "topic": "my_pubsub_topic",
-            "credentials_path": "/path/to/service_account.json"
+            "project_id": "fakeout-440306",
+            "topic_id": "fakeout-receive",
+            "credentials_path": "fakeout-440306-9fd1a97afe32.json"
         }
     },
     "batch" : {
