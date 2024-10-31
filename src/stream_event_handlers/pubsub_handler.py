@@ -55,6 +55,8 @@ class PubSubEventHandler(BaseEventHandler):
     def connect(self) -> None:
         """Initializes the Pub/Sub Publisher client and prepares the topic path."""
 
+        print(os.environ)
+        print(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
         # Ensure the Google Application Credentials environment variable is set
         if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
             # Construct the path to the credentials file
@@ -89,10 +91,6 @@ class PubSubEventHandler(BaseEventHandler):
         future = self.publisher.publish(self.topic_path, data)
         print(f"Published message ID: {future.result()}")
 
-
-    def close(self) -> None:
-        """Closes the Pub/Sub client connection."""
-        self.publisher.close()
 
 
 
