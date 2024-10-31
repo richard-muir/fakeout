@@ -1,4 +1,4 @@
-from base import BaseEventHandler
+from .base import BaseEventHandler
 from google.cloud import pubsub_v1
 import json
 import os
@@ -7,13 +7,21 @@ class PubSubEventHandler(BaseEventHandler):
     def __init__(self, config):
         super().__init__(config)
 
-        self.project_id = self.streaming_cred['project_id']
-        self.topic_id = self.streaming_cred['topic_id']
-        self.credentials_path = self.streaming_cred['credentials_path']
+        self.project_id = self.connection_creds['project_id']
+        self.topic_id = self.connection_creds['topic_id']
+        self.credentials_path = self.connection_creds['credentials_path']
 
+        print("XXXXXXXXXXXXXXXXXX")
+
+        print(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
+
+        del os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+
+        print(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
+              
         if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
             # Construct the path to the credentials file
-            creds_path = os.path.join("../_creds", self.credentials_path)
+            creds_path = os.path.join("_creds", self.credentials_path)
             os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = creds_path
 
 

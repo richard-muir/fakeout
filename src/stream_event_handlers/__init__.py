@@ -1,1 +1,1 @@
-from pubsub_handler import PubSubHandler
+from .pubsub_handler import PubSubEventHandler

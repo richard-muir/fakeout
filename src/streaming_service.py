@@ -1,10 +1,10 @@
-from stream_event_handlers import PubSubHandler
+from stream_event_handlers import PubSubEventHandler
 
 
 
 class StreamingService:
     EVENT_HANDLER_LOOKUP = {
-        'pubsub' : PubSubHandler
+        'pubsub' : PubSubEventHandler
         # Add other handlers here as needed
     }
     
@@ -29,6 +29,7 @@ class StreamingService:
         
     def push(self, data):
         self.event_handler.publish(data)
+        self.n_records_pushed += 1
 
     def close(self):
         self.event_handler.close()
