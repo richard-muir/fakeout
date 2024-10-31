@@ -3,6 +3,7 @@ import os
 from typing import Any, Dict
 
 from google.cloud import pubsub_v1
+from google.oauth2 import service_account
 
 from .base import BaseEventHandler
 
@@ -47,16 +48,14 @@ class PubSubEventHandler(BaseEventHandler):
         self.topic_id = self.connection_creds['topic_id']
         self.credentials_path = self.connection_creds['credentials_path']
               
-        # Ensure the Google Application Credentials environment variable is set
-        if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
-            # Construct the path to the credentials file
-            creds_path = os.path.join("_creds", self.credentials_path)
-            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = creds_path
-
-
+        
     def connect(self) -> None:
         """Initializes the Pub/Sub Publisher client and prepares the topic path."""
-        self.publisher = pubsub_v1.PublisherClient()
+        creds_path = os.path.join("_creds", self.credentials_path)
+
+        # Load credentials directly from the file
+        self.creds = service_account.Credentials.from_service_account_file(creds_path)
+        self.publisher = pubsub_v1.PublisherClient(credentials=self.creds)
         self.topic_path = self.publisher.topic_path(self.project_id, self.topic_id)
 
 

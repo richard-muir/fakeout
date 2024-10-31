@@ -43,10 +43,9 @@ class BatchService:
         output_path = self.path + f'_{now}.json'
         with open(output_path, 'w') as f:
             json.dump(self.data, f, indent=4)
-        self.data = []
         
 
-    def clean_old_exports(self, clean_after: int = 3600) -> None:
+    def clean_old_exports(self, clean_after: int = 60) -> None:
         """
         Removes batch files older than the specified `clean_after` interval.
         
@@ -59,6 +58,7 @@ class BatchService:
         now = datetime.now(pytz.utc)
         cutoff_time = now - timedelta(seconds=clean_after)
 
+        deleted_files = []
         # Iterate through files in the folder
         for filename in os.listdir(self.batch_path):
             if filename.startswith(self.filename_stem):  # Check if it's an export file
@@ -67,6 +67,13 @@ class BatchService:
                 # Check if the file is older than the cutoff time
                 if file_time and file_time < cutoff_time:
                     self.__delete_file(filename)
+                    deleted_files.append(filename)
+        print(f"{len(deleted_files)} exported batch files deleted")
+
+
+    def _clear_batch_data(self) -> None:
+        """Resets the batch data to an empty list"""
+        self.data = []
 
 
     def __parse_timestamp_from_filename(self, filename: str) -> Optional[datetime]:

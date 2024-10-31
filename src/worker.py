@@ -93,5 +93,6 @@ class Worker:
             self.batch_service.export_batch()
             print(f"N streaming records: {self.streaming_service.n_records_pushed}\n" + 
                   f"N records uploaded in batch: {len(self.batch_service.data)}")
+            self.batch_service._clear_batch_data()
             self.batch_service.clean_old_exports()
 
