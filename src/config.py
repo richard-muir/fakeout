@@ -54,6 +54,7 @@ class Config:
                 self.streaming_interval = config.get('streaming', {}).get('interval')
                 self.batch_file_name = config.get('batch', {}).get('file_name')
                 self.batch_interval = config.get('batch', {}).get('interval')
+                self.batch_cleanup_after = config.get('batch', {}).get('cleanup_after')
                 self.data_description = config.get('data_description', [])
                 self.streaming_service = config.get('streaming', {}).get('service')
                 self.streaming_creds = config.get('streaming', {}).get('connection_creds')

@@ -10,7 +10,8 @@
     },
     "batch" : {
         "file_name" : "data_batch",
-        "interval" : 10
+        "interval" : 10,
+        "cleanup_after" : 60
     },
     "data_description": [
       {

@@ -28,6 +28,7 @@ class BatchService:
         self.interval = config.batch_interval
         self.filename_stem = config.batch_file_name
         self.batch_path = batch_path
+        self.cleanup_after = config.batch_cleanup_after
         self.path = os.path.join(batch_path, self.filename_stem)
         self.data = []
         
@@ -45,18 +46,15 @@ class BatchService:
             json.dump(self.data, f, indent=4)
         
 
-    def clean_old_exports(self, clean_after: int = 60) -> None:
+    def clean_old_exports(self) -> None:
         """
         Removes batch files older than the specified `clean_after` interval.
         
-        Args:
-            clean_after (int): Interval in seconds after which files should be deleted. Defaults to 1 hour.
-        
         This method iterates over files in the batch directory, checks each file’s timestamp,
-        and deletes files that are older than the calculated cutoff time.
+        and deletes files that are older than the cutoff time passed in config.
         """
         now = datetime.now(pytz.utc)
-        cutoff_time = now - timedelta(seconds=clean_after)
+        cutoff_time = now - timedelta(seconds=self.cleanup_after)
 
         deleted_files = []
         # Iterate through files in the folder

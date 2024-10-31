@@ -12,7 +12,7 @@ class TestConfig(unittest.TestCase):
         test_config = {
             "streaming": {"interval": 5},
             "batch": {"file_name": "data_batch", "interval": 900},
-            "data_records": [
+            "data_description": [
                 {"name": "sensor_id", "data_type": "string", "allowable_values": ["sensor_1", "sensor_2", "sensor_3"]},
                 {"name": "value", "data_type": "float", "allowable_values": [0.0, 100.0]}
             ]
@@ -32,7 +32,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(config.streaming_interval, 5)
         self.assertEqual(config.batch_file_name, "data_batch")
         self.assertEqual(config.batch_interval, 900)
-        self.assertEqual(len(config.data_records), 2)
+        self.assertEqual(len(config.data_description), 2)
 
     def test_missing_file(self):
         """Test if FileNotFoundError is raised for a missing config file."""
