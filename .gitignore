@@ -1,6 +1,9 @@
 # Ignore virtual environment folder
 venv/
 
+# Ignore creds folder
+_creds/
+
 # Ignore Python bytecode files
 __pycache__/
 *.pyc

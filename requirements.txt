@@ -2,3 +2,4 @@ Flask==2.1.2           # For creating a web server to serve batch files
 numpy==1.26.4           # Fix the version number below to in order to maintain compatibility with pandas
 pandas==2.1.0          # For data manipulation and exporting to CSV
 pytest==7.1.2          # For running tests
+google-cloud-pubsub    # To handle interactions with pub/sub
