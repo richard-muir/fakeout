@@ -3,6 +3,10 @@ import queue
 from threading import Thread
 from typing import Any
 
+from data_generator import DataGenerator
+from streaming_service import StreamingService
+from batch_service import BatchService
+
 class Worker:
     """
     Coordinates data generation, streaming, and batching processes using multiple threads.
@@ -14,7 +18,12 @@ class Worker:
         keep_running (bool): Controls whether the worker should continue running.
         data_queue (queue.Queue): Queue to manage data between streaming and batching threads.
     """
-    def __init__(self, data_generator: Any, streaming_service: Any, batch_service: Any) -> None:
+    def __init__(
+            self, 
+            data_generator: DataGenerator, 
+            streaming_service: StreamingService, 
+            batch_service: BatchService
+            ) -> None:
         """
         Initializes the Worker with data generation, streaming, and batch services.
         
