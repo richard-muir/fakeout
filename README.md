@@ -2,7 +2,9 @@
 
 ## Overview
 
-FakeOut is a Python application that generates fake streaming data and periodically exports it as a batch file.
+FakeOut is a Python application that generates fake streaming data and periodically exports it as a batch file. 
+
+It's useful for Data Engineers who want to test their streaming and batch processing pipelines with toy data.
 
 
 ## Features
