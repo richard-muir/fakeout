@@ -1,0 +1,9 @@
+services:
+  fakeout_streaming:
+    build: .
+    image: fakeout  # Replace with your actual image name
+    volumes:
+      - ./_creds:/app/_creds  # Assuming your creds folder is in the same directory as your docker-compose.yml
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/_creds/fakeout-440306-9fd1a97afe32.json
+    command: python src/main.py  # Replace with your actual command to run the app
