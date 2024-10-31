@@ -1,23 +1,26 @@
-import json
 import os
-import code
+import json
+from typing import List, Optional, Dict, Union
 
 
 class Config:
     """
-    A class to handle the configuration settings for fakeout.
+    A class to handle configuration settings for Fakeout.
 
     Attributes:
-        streaming_interval (int): The interval for streaming data in seconds.
-        batch_file_name (str): The name of the batch file stem for export.
-        batch_interval (int): The interval for batch export in seconds in seconds.
-        data_records (list): A list of data record configurations.
+        streaming_interval (Optional[int]): The interval for streaming data in seconds.
+        batch_file_name (Optional[str]): The base name of the batch file for export.
+        batch_interval (Optional[int]): The interval for batch export in seconds.
+        data_description (List[Dict[str, Union[str, int, float]]]): A list of data record configurations.
+        datetime_format_string (str): Format string for date and time in batch files.
+        streaming_service (Optional[str]): Name of the streaming service (e.g., 'pubsub').
+        streaming_creds (Optional[Dict[str, str]]): Connection credentials for streaming services.
     """
 
-    def __init__(self, config_file='config.json'):
+    def __init__(self, config_file: str = 'config.json') -> None:
         """
         Initializes the Config instance and loads the configuration from a JSON file.
-        Searches for the config file one level up from the src folder
+        Searches for the config file one level up from the src folder.
 
         Args:
             config_file (str): The path to the JSON configuration file (default is 'config.json').
@@ -30,7 +33,7 @@ class Config:
         self.load_config()
         self.datetime_format_string = '%Y%m%d %H%M%S %f %z'
 
-    def load_config(self):
+    def load_config(self) -> None:
         """
         Loads configuration settings from the JSON file.
 
@@ -55,6 +58,6 @@ class Config:
                 self.streaming_service = config.get('streaming', {}).get('service')
                 self.streaming_creds = config.get('streaming', {}).get('connection_creds')
 
-    def _validate_config(self):
+    def _validate_config(self) -> List[str]:
         """Validate the configuration, or at least, it will do."""
         return []
