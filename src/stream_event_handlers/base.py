@@ -43,11 +43,3 @@ class BaseEventHandler(ABC):
         """
         pass
 
-    @abstractmethod
-    def close(self):
-        """
-        Closes the connection to the event handler.
-        
-        Ensures that any resources held by the connection are released.
-        """
-        pass
