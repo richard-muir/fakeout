@@ -1,7 +1,8 @@
+import os
 import json
 from datetime import datetime, timedelta
 import pytz
-import os
+from typing import List, Dict, Optional
 
 class BatchService:
     """
@@ -15,7 +16,7 @@ class BatchService:
         data (list): List of data entries to be exported in each batch.
     """
 
-    def __init__(self, config, batch_path='public'):
+    def __init__(self, config: Dict[str, str], batch_path: str = 'public') -> None:
         """
         Initializes the BatchService with configuration and setup paths for export.
         
@@ -31,7 +32,7 @@ class BatchService:
         self.data = []
         
 
-    def export_batch(self):
+    def export_batch(self) -> None:
         """
         Exports the current batch of data to a JSON file, appending a timestamp to the filename.
         
@@ -45,7 +46,7 @@ class BatchService:
         self.data = []
         
 
-    def clean_old_exports(self, clean_after=60):
+    def clean_old_exports(self, clean_after: int = 3600) -> None:
         """
         Removes batch files older than the specified `clean_after` interval.
         
@@ -68,7 +69,7 @@ class BatchService:
                     self.__delete_file(filename)
 
 
-    def __parse_timestamp_from_filename(self, filename):
+    def __parse_timestamp_from_filename(self, filename: str) -> Optional[datetime]:
         """Extracts and returns the datetime object from the filename."""
         try:
             timestamp_str = filename.split('_')[-1].replace('.json', '')
@@ -78,7 +79,7 @@ class BatchService:
             return None
         
 
-    def __delete_file(self, filename):
+    def __delete_file(self, filename: str) -> None:
         """Deletes the specified file and logs the deletion."""
         file_path = os.path.join(self.batch_path, filename)
         os.remove(file_path)
