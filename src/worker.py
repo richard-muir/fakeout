@@ -20,6 +20,10 @@ class Worker:
         streaming_thread.join()
         batch_thread.join()
 
+    def stop(self):
+        self.batch_service.clean_old_exports()
+        self.streaming_service.close()
+
     def _streaming_loop(self):
         while self.keep_running:
             data = next(self.data_generator.generate())
