@@ -4,6 +4,16 @@ services:
     image: fakeout
     volumes:
       - ./_creds:/app/_creds
+      - ./public:/app/public  # Mount the public folder for live updates
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/app/_creds/GOOGLE_APPLICATION_CREDENTIALS.json
     command: python src/main.py
+
+
+  fakeout_batch:
+    image: python:3.11-slim  # Using a slim Python image to serve files
+    volumes:
+      - ./public:/app/public  # Mount the public folder to expose it
+    ports:
+      - "8080:8000"  # Map port 8080 on your host to port 8000 in the container
+    command: python -m http.server 8000 --directory /app/public  # Serve the public directory
