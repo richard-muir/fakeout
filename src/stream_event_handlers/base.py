@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any, Dict
 
 class BaseEventHandler(ABC):
     """
@@ -13,7 +14,7 @@ class BaseEventHandler(ABC):
                           typically provided in the configuration.
     """
 
-    def __init__(self, config):
+    def __init__(self, config: Dict[str, Any]) -> None:
         """
         Initializes the base event handler with connection credentials.
 
