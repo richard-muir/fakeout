@@ -1,7 +1,11 @@
-from .base import BaseEventHandler
-from google.cloud import pubsub_v1
 import json
 import os
+from typing import Any, Dict
+
+from google.cloud import pubsub_v1
+
+from .base import BaseEventHandler
+
 
 class PubSubEventHandler(BaseEventHandler):
     """
@@ -27,8 +31,8 @@ class PubSubEventHandler(BaseEventHandler):
         close():
             Closes the Pub/Sub client connection to release resources.
     """
-    
-    def __init__(self, config):
+
+    def __init__(self, config: Dict[str, Any]) -> None:
         """
         Initializes the PubSubEventHandler with Pub/Sub specific settings.
         
@@ -50,13 +54,13 @@ class PubSubEventHandler(BaseEventHandler):
             os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = creds_path
 
 
-    def connect(self):
+    def connect(self) -> None:
         """Initializes the Pub/Sub Publisher client and prepares the topic path."""
         self.publisher = pubsub_v1.PublisherClient()
         self.topic_path = self.publisher.topic_path(self.project_id, self.topic_id)
 
 
-    def publish(self, data):
+    def publish(self, data) -> None:
         """
         Publishes a message to the Pub/Sub topic.
         
@@ -70,7 +74,7 @@ class PubSubEventHandler(BaseEventHandler):
         print(f"Published message ID: {future.result()}")
 
 
-    def close(self):
+    def close(self) -> None:
         """Closes the Pub/Sub client connection."""
         self.publisher.close()
 
