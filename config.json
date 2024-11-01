@@ -97,7 +97,18 @@
       "connection_creds" : {
         "port" : "8080"
       },
-      "data_description" : "streaming_1"
+      "data_description" : [
+        {
+          "name": "sensor_id",
+          "data_type": "category",
+          "allowable_values": ["sensor_1", "sensor_2", "sensor_3"]
+        },
+        {
+          "name": "value",
+          "data_type": "numeric",
+          "allowable_values": [0.0, 100.0] 
+        }
+      ]
     }
   ]      
 }
