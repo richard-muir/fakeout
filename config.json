@@ -93,6 +93,8 @@
       "interval" : 30,
       "filetype" : "json",
       "service" : "local",
+      "size" : 1000,
+      "randomise" : true,
       "cleanup_after" : 60,
       "connection_creds" : {
         "port" : "8080"
