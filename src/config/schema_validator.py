@@ -1,12 +1,13 @@
-from typing import List, Dict, Literal, Union
-from enum import Enum, IntEnum
-
-from pydantic import Field, BaseModel, ValidationError, model_validator
-# from pydantic.functional_validators import str_enum, constrained_list, constrained_float
-
-
 from pydantic import BaseModel, Field
 from typing import List, Optional, Literal, Any
+
+# TODO: Need to implement conditional model checking if I want to have separate models for
+#  batch_creds and streaming_creds, and for every DataType:
+#  https://stackoverflow.com/a/78414574 <-- pretty sure this is what i'll needs
+# https://medium.com/@marcnealer/a-practical-guide-to-using-pydantic-8aafa7feebf6
+# https://stackoverflow.com/questions/61392633/how-to-validate-more-than-one-field-of-a-pydantic-model
+# Also consider Cerberus as an alternative
+# TODO: Default values for some fields
 
 class DataDescription(BaseModel):
     name: str
@@ -171,7 +172,8 @@ config_data = {
 
 config = Config(**config_data)
 
-
+################################
+# Garage - preferred configuration architecture
 
 # class MainConfig(BaseModel):
 #     pass
@@ -200,6 +202,8 @@ config = Config(**config_data)
 # class DataDescription(BaseModel):
 #     pass
 
+################################
+# Garage - attempt at preferred configuration architecture
 
 
 # class DataTypeEnum(str, Enum):
