@@ -55,26 +55,10 @@ class PubSubEventHandler(BaseEventHandler):
     def connect(self) -> None:
         """Initializes the Pub/Sub Publisher client and prepares the topic path."""
 
-        print(os.environ)
-        print(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
-        # Ensure the Google Application Credentials environment variable is set
-        if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
-            # Construct the path to the credentials file
-            creds_path = os.path.join("_creds", self.credentials_path)
-            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = creds_path
+        creds_path = os.path.join("_creds", self.credentials_path)
+        self.creds = service_account.Credentials.from_service_account_file(creds_path)
+        self.publisher = pubsub_v1.PublisherClient(credentials=self.creds)
 
-        # On local machine, some weird defaults are set, so try this, and if it fails
-        #  then fall back to loading the local file
-        try:
-            self.publisher = pubsub_v1.PublisherClient()
-
-        except DefaultCredentialsError:
-            # Load credentials directly from the file
-            creds_path = os.path.join("_creds", self.credentials_path)
-            self.creds = service_account.Credentials.from_service_account_file(creds_path)
-            self.publisher = pubsub_v1.PublisherClient(credentials=self.creds)
-
-        
         self.topic_path = self.publisher.topic_path(self.project_id, self.topic_id)
 
 

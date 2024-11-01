@@ -5,8 +5,8 @@ services:
     volumes:
       - ./_creds:/app/_creds
       - ./public:/app/public  # Mount the public folder for live updates
-    environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/app/_creds/GOOGLE_APPLICATION_CREDENTIALS.json
+    # environment:
+    #   - GOOGLE_APPLICATION_CREDENTIALS=/app/_creds/GOOGLE_APPLICATION_CREDENTIALS.json
     command: python src/main.py
 
 
