@@ -30,7 +30,11 @@ It's useful for Data Engineers who want to test their streaming and batch proces
 
 ### Configuration
 
+For connection to different messaging services, you will probably need credentials. Currently only Google Pub/Sub is supported, so to connect, you'll need to generate some credentials that give the application access to your Pub/Sub topic. You'll probably want to limit the scope of these creds, just in case. 
+
 Get your [Google Cloud Credentials JSON file](https://www.youtube.com/watch?v=rWcLDax-VmM) and save it to the /_creds directory.
+
+
 Easiest if you save it as "GOOGLE_APPLICATION_CREDENTIALS.json", otherwise you need to make the following changes:
 - docker-compose.yml: Under "environment", change "GOOGLE_APPLICATION_CREDENTIALS=/app/_creds/GOOGLE_APPLICATION_CREDENTIALS.json" to "GOOGLE_APPLICATION_CREDENTIALS=/app/_creds/<YOUR_GOOGLE_CREDS_FILENAME>.json
 - config.json: Change streaming.connection_creds.credentials_path to "<YOUR_GOOGLE_CREDS_FILENAME>.json"
