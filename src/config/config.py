@@ -2,6 +2,10 @@ import os
 import json
 from typing import List, Optional, Dict, Union
 
+from pydantic import ValidationError
+
+from schema_validator import ConfigValidator
+
 
 class StreamingConfig:
     """
@@ -99,7 +103,7 @@ class Config:
         Args:
             config_file (str): The path to the JSON configuration file.
         """
-        self.config_file = os.path.join(os.path.dirname(__file__), '..', config_file)
+        self.config_file = os.path.join(os.path.dirname(__file__), '..', '..', config_file)
         self.streaming_configs: List[StreamingConfig] = []
         self.batch_configs: List[BatchConfig] = []
         self.load_config()
@@ -114,29 +118,36 @@ class Config:
         """
         with open(self.config_file, 'r') as file:
             config = json.load(file)
-            
-            # Load each streaming configuration
-            for stream in config.get("streaming", []):
-                streaming_config = StreamingConfig(
-                    name=stream["name"],
-                    interval=stream["interval"],
-                    size=stream.get("size", 1),  # Default to 1 if size isn't specified
-                    randomise=stream.get("randomise", False),
-                    connection=stream["connection"],
-                    data_description=stream["data_description"]
-                )
-                self.streaming_configs.append(streaming_config)
+            try:
+            # Validate the data
+                _ = ConfigValidator(**config)
+            except ValidationError as e:
+                print("Validation error:", e)
 
-            # Load each batch configuration
-            for batch in config.get("batch", []):
-                batch_config = BatchConfig(
-                    name=batch["name"],
-                    interval=batch["interval"],
-                    size=batch.get("size", 1),  # Default to 1 if size isn't specified
-                    randomise=batch.get("randomise", False),
-                    filetype=batch["filetype"],
-                    cleanup_after=batch.get("cleanup_after", 0),
-                    connection=batch["connection"],
-                    data_description=batch["data_description"]
-                )
-                self.batch_configs.append(batch_config)
+        # Load each streaming configuration
+        for stream in config.get("streaming", []):
+            streaming_config = StreamingConfig(
+                name=stream["name"],
+                interval=stream["interval"],
+                size=stream.get("size", 1),  # Default to 1 if size isn't specified
+                randomise=stream.get("randomise", False),
+                connection=stream["connection"],
+                data_description=stream["data_description"]
+            )
+            self.streaming_configs.append(streaming_config)
+
+        # Load each batch configuration
+        for batch in config.get("batch", []):
+            batch_config = BatchConfig(
+                name=batch["name"],
+                interval=batch["interval"],
+                size=batch.get("size", 1),  # Default to 1 if size isn't specified
+                randomise=batch.get("randomise", False),
+                filetype=batch["filetype"],
+                cleanup_after=batch.get("cleanup_after", 0),
+                connection=batch["connection"],
+                data_description=batch["data_description"]
+            )
+            self.batch_configs.append(batch_config)
+
+
