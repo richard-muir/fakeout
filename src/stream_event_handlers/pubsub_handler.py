@@ -9,6 +9,7 @@ from google.auth.exceptions import DefaultCredentialsError
 from .base import BaseEventHandler
 
 
+
 class PubSubEventHandler(BaseEventHandler):
     """
     Event handler for publishing messages to Google Cloud Pub/Sub.
@@ -34,44 +35,37 @@ class PubSubEventHandler(BaseEventHandler):
             Closes the Pub/Sub client connection to release resources.
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, connection: Dict[str, Any]) -> None:
         """
-        Initializes the PubSubEventHandler with Pub/Sub specific settings.
+        Initializes the PubSubEventHandler with settings from the connection dictionary.
         
         Args:
-            config (dict): Configuration dictionary including Pub/Sub-specific
-                           credentials and topic information.
+            connection (Dict[str, Any]): Pub/Sub connection details.
         """
-        super().__init__(config)
-
-        # Extract Pub/Sub-specific settings from credentials
-        self.project_id = self.connection_creds['project_id']
-        self.topic_id = self.connection_creds['topic_id']
-        self.credentials_path = self.connection_creds['credentials_path']
+        super().__init__(connection)
+        self.project_id = connection['project_id']
+        self.topic_id = connection['topic_id']
+        self.credentials_path = connection['credentials_path']
+        self.publisher = None
+        self.topic_path = None
               
         
-
-
     def connect(self) -> None:
-        """Initializes the Pub/Sub Publisher client and prepares the topic path."""
-
+        """Sets up the Pub/Sub client and prepares the topic path."""
         creds_path = os.path.join("_creds", self.credentials_path)
         self.creds = service_account.Credentials.from_service_account_file(creds_path)
         self.publisher = pubsub_v1.PublisherClient(credentials=self.creds)
-
         self.topic_path = self.publisher.topic_path(self.project_id, self.topic_id)
 
 
     def publish(self, data) -> None:
         """
         Publishes a message to the Pub/Sub topic.
-        
+
         Args:
-            data (dict): The data/message to publish, which is converted to JSON.
+            data (dict): The data to be published, converted to JSON.
         """
         data = json.dumps(data).encode("utf-8")
-    
-        # Publish the message
         future = self.publisher.publish(self.topic_path, data)
         print(f"Published message ID: {future.result()}")
 

@@ -39,11 +39,14 @@ class StreamingService:
         self.n_records_pushed = 0
         self.service_name = config.streaming_service
 
+        self.connection_details = config.connection
+        self.service_name = self.connection['service']
+
         # Validate service type, create event handler and connect
         if self.service_name not in self.EVENT_HANDLER_LOOKUP:
             raise ValueError(f"Service '{self.service_name}' is not supported.")
         
-        self.event_handler = self.EVENT_HANDLER_LOOKUP[self.service_name](config)
+        self.event_handler = self.EVENT_HANDLER_LOOKUP[self.service_name](self.connection_details)
         self.event_handler.connect()
         
     def push(self, data: Dict[str, Any]) -> None:
