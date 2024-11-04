@@ -45,7 +45,6 @@ DataField = Annotated[
     Field(discriminator="data_type")]
 
 
-
 class BatchConnectionCredsGCP(BaseModel):
     service: Literal['google_cloud_storage']
     project_id: str
@@ -66,9 +65,9 @@ class StreamingConnectionCredsPubSub(BaseModel):
 
 class StreamingConfig(BaseModel):
     name: str
-    interval: int
-    size: int
-    randomise: bool
+    interval: int = 60 # Every minute
+    size: int = 3 # rows
+    randomise: bool = False
     connection: Union[
         StreamingConnectionCredsPubSub
         ] = Field(..., discriminator='service')
@@ -77,10 +76,10 @@ class StreamingConfig(BaseModel):
 class BatchConfig(BaseModel):
     name: str
     filetype: Literal['csv', 'json', 'parquet']
-    interval: int
-    size: int
-    cleanup_after: int
-    randomise: bool
+    interval: int = 60*60*24 # Daily
+    size: int = 1000 # Rows
+    cleanup_after: int = 60*60*24*7 # Weekly
+    randomise: bool = False
     connection: Union[
         BatchLocalCreds,
         BatchConnectionCredsGCP
