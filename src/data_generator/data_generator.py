@@ -1,7 +1,7 @@
 from datetime import datetime
 import random
 import pytz
-from typing import List, Dict, Any, Iterator
+from typing import List, Dict, Any, Iterator, Optional
 
 from ..config import Config
 
@@ -33,7 +33,7 @@ class DataGenerator:
             'numeric' : self._generate_numeric_data
         }
 
-    def generate(self) -> Iterator[Dict[str, Any]]:
+    def generate(self, num_records: Optional[int] = 1) -> Iterator[Dict[str, Any]]:
         # TODO: Add chunk_size support
         """
         Continuously generates synthetic data until stopped.
@@ -42,8 +42,10 @@ class DataGenerator:
             Dict[str, Any]: A dictionary containing a data record with a timestamp 
             and fields based on the data description in the configuration.
         """
-        while self.keep_on_swimming:
+        count = 0
+        while self.keep_on_swimming and (num_records is None or count < num_records):
             yield self._generate_fake_data()
+            count += 1
 
     def stop(self) -> None:
         """
