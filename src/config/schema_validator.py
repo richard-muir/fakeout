@@ -5,13 +5,10 @@ from typing_extensions import Annotated
 from pydantic import BaseModel, Field, model_validator
 
 
-# TODO: Need to implement conditional model checking if I want to have separate models for
-#  batch_creds and streaming_creds, and for every DataType:
-#  https://docs.pydantic.dev/latest/concepts/unions/#discriminated-unions
 # TODO: # Add these later
         # 'integer', 'float', 'bool', 'email', 'name',
         # 'phone', 'datetime', 'nested', 'image', 'video'
-# TODO: Default values for some fields
+# TODO: Field decriptions
 
 class CategoryField(BaseModel):
     name: str
@@ -68,6 +65,9 @@ class StreamingConfig(BaseModel):
     interval: int = 60 # Every minute
     size: int = 3 # rows
     randomise: bool = False
+    # REF: Need to implement conditional model checking if I want to have separate models for
+    #  batch_creds and streaming_creds, and for every DataType:
+    #  https://docs.pydantic.dev/latest/concepts/unions/#discriminated-unions
     connection: Union[
         StreamingConnectionCredsPubSub
         ] = Field(..., discriminator='service')
