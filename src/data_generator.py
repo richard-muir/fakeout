@@ -34,6 +34,7 @@ class DataGenerator:
         }
 
     def generate(self) -> Iterator[Dict[str, Any]]:
+        # TODO: Add chunk_size support
         """
         Continuously generates synthetic data until stopped.
 

@@ -43,3 +43,11 @@ class BaseEventHandler(ABC):
         """
         pass
 
+
+    @abstractmethod
+    def generate_data(self):
+        """
+        Generates data based on the data_dictionary
+        """
+        pass
+

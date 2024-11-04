@@ -1,7 +1,7 @@
 import time
 import queue
 from threading import Thread
-from typing import Any
+from typing import Any, List
 
 from data_generator import DataGenerator
 from streaming_service import StreamingService
@@ -20,9 +20,8 @@ class Worker:
     """
     def __init__(
             self, 
-            data_generator: DataGenerator, 
-            streaming_service: StreamingService, 
-            batch_service: BatchService
+            streaming_services: List[StreamingService], 
+            batch_services: List[BatchService]
             ) -> None:
         """
         Initializes the Worker with data generation, streaming, and batch services.
@@ -32,12 +31,12 @@ class Worker:
             streaming_service: Streaming service instance for sending data to a stream.
             batch_service: Batch service instance for saving data in batches.
         """
-        self.data_generator = data_generator
-        self.streaming_service = streaming_service
-        self.batch_service = batch_service
+        self.streaming_services = streaming_services
+        self.batch_services = batch_services
         self.keep_running = True
         self.data_queue = queue.Queue()  # Create a shared queue
         
+# TODO: Need to fix the threading for multiple streaming and batch services
     def start(self) -> None:
         """
         Starts the worker by launching streaming and batching threads.

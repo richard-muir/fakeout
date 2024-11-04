@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field, model_validator
         # 'integer', 'float', 'bool', 'email', 'name',
         # 'phone', 'datetime', 'nested', 'image', 'video'
 # TODO: Field decriptions
+# TODO: Maximum number of concurrent services
 
 class CategoryField(BaseModel):
     name: str
