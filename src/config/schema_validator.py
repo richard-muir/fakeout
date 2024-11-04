@@ -1,52 +1,93 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional, Literal, Any
+import json
+from typing import List, Optional, Literal, Any, Union
+from typing_extensions import Annotated
+
+from pydantic import BaseModel, Field, model_validator
+
 
 # TODO: Need to implement conditional model checking if I want to have separate models for
 #  batch_creds and streaming_creds, and for every DataType:
-#  https://stackoverflow.com/a/78414574 <-- pretty sure this is what i'll needs
-# https://medium.com/@marcnealer/a-practical-guide-to-using-pydantic-8aafa7feebf6
-# https://stackoverflow.com/questions/61392633/how-to-validate-more-than-one-field-of-a-pydantic-model
-# Also consider Cerberus as an alternative
-# TODO: Default values for some fields
-
-class DataDescription(BaseModel):
-    name: str
-    data_type: Literal[
-        'category',
-        'numeric', 
-        # Add these later
+#  https://docs.pydantic.dev/latest/concepts/unions/#discriminated-unions
+# TODO: # Add these later
         # 'integer', 'float', 'bool', 'email', 'name',
         # 'phone', 'datetime', 'nested', 'image', 'video'
-        ]
-    allowable_values: List[Any]  # Change to List[Any] if mixed types are allowed
+# TODO: Default values for some fields
 
-class ConnectionCreds(BaseModel):
-    project_id: Optional[str] = None
-    topic_id: Optional[str] = None
-    bucket_name: Optional[str] = None
-    folder_path: Optional[str] = None
-    port: Optional[str] = None
-    credentials_path: Optional[str] = None
+class CategoryField(BaseModel):
+    name: str
+    data_type: Literal['category']
+    allowable_values: List[str] = Field(..., 
+                                        description="Allowed values for the category field.",
+                                        min_items=1, 
+                                        max_items=100)
+
+class NumericField(BaseModel):
+    name: str
+    data_type: Literal['numeric']
+    allowable_values: List[float] = Field(..., 
+                                        description="Min and max values defining the range of allowable values in the colums",
+                                        min_items=2, 
+                                        max_items=2)
+    
+    @model_validator(mode='after')
+    def validate_values_different(self):
+        if len(set(self.allowable_values)) != 2:
+            raise ValueError("allowable_values must contain exactly two distinct numbers.")
+
+# DataField needs to be defined like this in order to validate each of the possible types
+#  in a list. 
+#  Thanks: https://stackoverflow.com/questions/70914419/how-to-get-pydantic-to-discriminate-on-a-field-within-listuniontypea-typeb
+DataField = Annotated[
+    Union[
+        NumericField, 
+        CategoryField
+    ],
+    Field(discriminator="data_type")]
+
+
+
+class BatchConnectionCredsGCP(BaseModel):
+    service: Literal['google_cloud_storage']
+    project_id: str
+    bucket_name: str
+    folder_path: str
+    credentials_path: str
+
+class BatchLocalCreds(BaseModel):
+    service: Literal['local']
+    port: str
+
+
+class StreamingConnectionCredsPubSub(BaseModel):
+    service: Literal['pubsub']
+    project_id: str
+    topic_id: str
+    credentials_path: str
 
 class StreamingConfig(BaseModel):
     name: str
     interval: int
     size: int
-    service: Literal['pubsub']
     randomise: bool
-    connection_creds: ConnectionCreds
-    data_description: List[DataDescription]
+    connection: Union[
+        StreamingConnectionCredsPubSub
+        ] = Field(..., discriminator='service')
+    data_description: List[DataField]
 
 class BatchConfig(BaseModel):
     name: str
-    interval: int
-    size: Optional[int] = None
-    randomise: bool
     filetype: Literal['csv', 'json', 'parquet']
-    service: Literal['google_cloud_storage', 'local']
+    interval: int
+    size: int
     cleanup_after: int
-    connection_creds: ConnectionCreds
-    data_description: List[DataDescription]
+    randomise: bool
+    connection: Union[
+        BatchLocalCreds,
+        BatchConnectionCredsGCP
+        ] = Field(..., discriminator='service')
+    data_description: List[DataField]
+
+
 
 class Config(BaseModel):
     version: str
@@ -54,123 +95,49 @@ class Config(BaseModel):
     batch: List[BatchConfig]
 
 # Example usage
-config_data = { 
-  "version": "2.0",
-  "streaming" : [
-    {
-      "name" : "streaming_1",
-      "interval" : 1,
-      "size" : 3,
-      "service" : "pubsub",
-      "randomise" : False,
-      "connection_creds" : {
-          "project_id": "fakeout-440306",
-          "topic_id": "fakeout-receive",
-          "credentials_path": "GOOGLE_APPLICATION_CREDENTIALS.json"
-      },
-      "data_description": [
-        {
-          "name": "sensor_id",
-          "data_type": "category",
-          "allowable_values": ["sensor_1", "sensor_2", "sensor_3"]
-        },
-        {
-          "name": "value",
-          "data_type": "numeric",
-          "allowable_values": [0.0, 100.0] 
-        }
-      ] 
-    },
-    {
-      "name" : "streaming_2",
-      "interval" : 10,
-      "size" : 3,
-      "service" : "pubsub",
-      "randomise" : True,
-      "connection_creds" : {
-          "project_id": "fakeout-440306",
-          "topic_id": "fakeout-receive-2",
-          "credentials_path": "GOOGLE_APPLICATION_CREDENTIALS.json"
-      },
-      "data_description": [
-        {
-          "name": "machine_id",
-          "data_type": "category",
-          "allowable_values": ["Machine_1", "Machine_2", "Machine_3"]
-        },
-        {
-          "name": "value_1",
-          "data_type": "numeric",
-          "allowable_values": [0.0, 1.0] 
-        },
-        {
-          "name": "value_2",
-          "data_type": "numeric",
-          "allowable_values": [100, 1000] 
-        }
-      ] 
-    }
-  ],
-  "batch" : [
-    {
-      "name" : "batch_1",
-      "interval" : 3600,
-      "size" : 1000,
-      "randomise" : True,
-      "filetype" : "csv",
-      "service" : "google_cloud_storage",
-      "cleanup_after" : 60,
-      "connection_creds" : {
-        "project_id": "fakeout-440306",
-        "bucket_name": "your-bucket-name",
-        "folder_path": "your-folder-path",
-        "credentials_path": "GOOGLE_APPLICATION_CREDENTIALS.json"
-      },
-      "data_description" : [
-        {
-          "name": "machine_id",
-          "data_type" : "category",
-          "allowable_values": ["Machine_1", "Machine_2", "Machine_3"]
-        },
-        {
-          "name": "value_1",
-          "data_type": "numeric",
-          "allowable_values": [0.0, 1.0] 
-        },
-        {
-          "name": "value_2",
-          "data_type": "numeric",
-          "allowable_values": [100, 1000] 
-        }
-      ]
-    },
-    {
-      "name" : "batch_2",
-      "interval" : 30,
-      "filetype" : "json",
-      "service" : "local",
-      "randomise" : False,
-      "cleanup_after" : 60,
-      "connection_creds" : {
-        "port" : "8080"
-      },
-      "data_description" : [
-        {
-          "name": "sensor_id",
-          "data_type": "category",
-          "allowable_values": ["sensor_1", "sensor_2", "sensor_3"]
-        },
-        {
-          "name": "value",
-          "data_type": "numeric",
-          "allowable_values": [0.0, 100.0] 
-        }
-      ]
-    }
-  ]      
-}
+
+config_loc = r"C:\Users\richa\OneDrive\Documents\Python Scripts\fake-out\config.json"
+with open(config_loc, 'r') as file:
+    config_data = json.load(file)
 
 config = Config(**config_data)
+
+
+# {
+#           "name": "value",
+#           "data_type": "numeric",
+#           "allowable_values": [0.0, 100.0] 
+#         }
+
+# {
+#       "name" : "streaming_2",
+#       "interval" : 10,
+#       "size" : 3,
+#       "randomise" : true,
+#       "connection" : {
+#           "service" : "pubsub",
+#           "project_id": "fakeout-440306",
+#           "topic_id": "fakeout-receive-2",
+#           "credentials_path": "GOOGLE_APPLICATION_CREDENTIALS.json"
+#       },
+#       "data_description": [
+#         {
+#           "name": "machine_id",
+#           "data_type": "category",
+#           "allowable_values": ["Machine_1", "Machine_2", "Machine_3"]
+#         },
+#         {
+#           "name": "value_1",
+#           "data_type": "numeric",
+#           "allowable_values": [0.0, 1.0] 
+#         },
+#         {
+#           "name": "value_2",
+#           "data_type": "numeric",
+#           "allowable_values": [100, 1000] 
+#         }
+#       ] 
+#     }
 
 ################################
 # Garage - preferred configuration architecture
