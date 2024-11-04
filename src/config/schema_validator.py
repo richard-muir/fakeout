@@ -9,7 +9,6 @@ from pydantic import BaseModel, Field, model_validator
         # 'integer', 'float', 'bool', 'email', 'name',
         # 'phone', 'datetime', 'nested', 'image', 'video'
 # TODO: Field decriptions
-# TODO: Maximum number of concurrent services
 
 class CategoryField(BaseModel):
     name: str
@@ -76,7 +75,7 @@ class StreamingConfig(BaseModel):
     connection: Union[
         StreamingConnectionCredsPubSub
         ] = Field(..., discriminator='service')
-    data_description: List[DataField]
+    data_description: List[DataField] = Field(..., max_items=99, min_items=1)
 
 
 class BatchConfig(BaseModel):
@@ -90,11 +89,11 @@ class BatchConfig(BaseModel):
         BatchLocalCreds,
         BatchConnectionCredsGCP
         ] = Field(..., discriminator='service')
-    data_description: List[DataField]
+    data_description: List[DataField] = Field(..., max_items=99, min_items=1)
 
 
 class ConfigValidator(BaseModel):
     version: str
-    streaming: List[StreamingConfig]
-    batch: List[BatchConfig]
+    streaming: List[StreamingConfig] = Field(max_items=5)
+    batch: List[BatchConfig] = Field(max_items=5)
 

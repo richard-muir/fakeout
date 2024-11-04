@@ -60,7 +60,7 @@ class Worker:
         Calls the batch service's cleanup function and closes the streaming service.
         """
         self.batch_service.clean_old_exports()
-        self.streaming_service.close()
+        # self.streaming_service.close()
 
     def _streaming_loop(self) -> None:
         """

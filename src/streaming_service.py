@@ -66,12 +66,6 @@ class StreamingService:
         self.event_handler.publish(data)
         self.n_records_pushed += self.block_size
 
-    def close(self) -> None:
-        """
-        Closes the connection to the event handler, releasing resources.
-        """
-        self.event_handler.close()
-
     def generate(self) -> List:
         """
         Generates a chunk of data
