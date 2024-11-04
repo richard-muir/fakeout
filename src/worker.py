@@ -3,7 +3,6 @@ import queue
 from threading import Thread
 from typing import Any, List
 
-from data_generator import DataGenerator
 from streaming_service import StreamingService
 from batch_service import BatchService
 
@@ -39,59 +38,74 @@ class Worker:
 # TODO: Need to fix the threading for multiple streaming and batch services
     def start(self) -> None:
         """
-        Starts the worker by launching streaming and batching threads.
+        Starts the worker by launching the streaming and batching threads.
         
-        This method creates separate threads for streaming and batching operations,
-        allowing both to run concurrently.
+        This method creates separate threads for each streaming and batching operation.
         """
-        streaming_thread = Thread(target=self._streaming_loop)
-        batch_thread = Thread(target=self._batch_loop)
+
+        # Create and start a thread for each streaming service
+        self.streaming_threads = [
+            Thread(target=self._streaming_loop, args=(service,))
+            for service in self.streaming_services
+        ]
+
+        # Start threads for each batch service
+        self.batch_threads = [
+            Thread(target=self._run_batch_service, args=(service,))
+            for service in self.batch_services
+        ]
+
+        self.all_threads = self.streaming_threads + self.batch_threads
+
+
+        # Launch all threads
+        for thread in self.all_threads:
+            thread.start()
         
-        streaming_thread.start()
-        batch_thread.start()
-        
-        streaming_thread.join()
-        batch_thread.join()
+        # Wait for all threads to complete
+        for thread in self.all_threads:
+            thread.join()
 
     def stop(self) -> None:
         """
-        Stops the worker by cleaning up old batch exports and closing streaming resources.
-        
-        Calls the batch service's cleanup function and closes the streaming service.
+        Signals the worker to stop running by setting keep_running to False.
         """
-        self.batch_service.clean_old_exports()
-        # self.streaming_service.close()
+        self.keep_running = False
+        for batch_service in self.batch_services:
+            batch_service.clean_old_exports()
+        # PubSub doesn't have a close connection capability, but others might. 
+        #  Leaving this breadcrumb here.
+        # for streaming_service in self.streaming_services:
+        #     streaming_service.close()
 
-    def _streaming_loop(self) -> None:
+
+    def _run_streaming_service(self, service: StreamingService) -> None:
         """
-        Handles the streaming loop, generating data and pushing it to the streaming service.
+        Manages the lifecycle of a single streaming service, handling data generation and streaming.
         
-        This loop continuously generates data from the data generator, adds it to the data queue,
-        and sends it to the streaming service, with a delay based on the streaming interval.
+        Args:
+            service (StreamingService): The streaming service to run.
         """
         while self.keep_running:
-            data = next(self.data_generator.generate())
-            self.data_queue.put(data)  # Push data to the queue
-            self.streaming_service.push(data)  # Stream data
-            time.sleep(self.streaming_service.interval)
+            data = service.data_generator.generate()
+            service.push(data)
+            time.sleep(service.interval)
 
-    def _batch_loop(self) -> None:
+
+    def _run_batch_service(self, service: BatchService) -> None:
         """
-        Handles the batching loop, saving data in batches at regular intervals.
+        Manages the lifecycle of a single batch service, handling data generation and batching.
         
-        This loop periodically collects data from the data queue, adds it to the batch service's data list,
-        and triggers the batch export function. Old exports are cleaned up after each batch save.
+        Args:
+            service (BatchService): The batch service to run.
         """
-        self.batch_service.clean_old_exports()
+        service.clean_old_exports()
         while self.keep_running:
-            time.sleep(self.batch_service.interval)
-            # After sleeping, populate the batch service data list from the shared Queue
-            while not self.data_queue.empty():
-                self.batch_service.data.append(self.data_queue.get())
-            # export, log & clean up    
-            self.batch_service.export_batch()
-            print(f"N streaming records: {self.streaming_service.n_records_pushed}\n" + 
-                  f"N records uploaded in batch: {len(self.batch_service.data)}")
-            self.batch_service._clear_batch_data()
-            self.batch_service.clean_old_exports()
+            time.sleep(service.interval)
+            # Generate batch data, export it, and clean up
+            batch_data = service.data_generator.generate_batch()
+            service.export_batch(batch_data)
+            print(f"Batch data exported for service: {service.name}")
+            service.clean_old_exports()
+
 
