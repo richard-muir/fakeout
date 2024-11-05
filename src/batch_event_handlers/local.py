@@ -45,7 +45,7 @@ class LocalStorageConnection(BaseBatchConnection):
         """
         super().__init__()
         self.port = connection['port']
-        self.folder = connection['folder_path']
+        self.folder_path = connection['folder_path']
 
         
     def connect(self) -> None:
@@ -63,7 +63,8 @@ class LocalStorageConnection(BaseBatchConnection):
         The batch is saved in the directory specified by `self.batch_path`, and the filename
         is derived from `self.filename_stem` with the current UTC timestamp appended.
         """
-        with open(filename, 'w') as f:
+        output_path = os.path.join(self.folder_path, filename)
+        with open(output_path, 'w') as f:
             json.dump(data, f, indent=4)
 
 
