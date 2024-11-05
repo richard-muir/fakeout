@@ -3,7 +3,7 @@ import random
 import pytz
 from typing import List, Dict, Any, Iterator, Optional
 
-from ..config import Config
+from config import Config
 
 
 

@@ -4,7 +4,7 @@ from typing import List, Optional, Dict, Union
 
 from pydantic import ValidationError
 
-from schema_validator import ConfigValidator
+from .schema_validator import ConfigValidator
 
 
 class StreamingConfig:
