@@ -89,6 +89,7 @@ class GoogleCloudStorageConnection(BaseBatchConnection):
         print(f"Data successfully uploaded to {self.bucket_name}/{self.folder_path}.")
 
 
+
     def clean_old_uploads(self, cutoff_time: datetime, filename_prefix: str) -> None:
         """
         Cleans up old uploads from the Google Cloud Storage bucket based on the specified cutoff time.
