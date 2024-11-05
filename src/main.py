@@ -22,9 +22,8 @@ if __name__ == "__main__":
     # Load configuration
     config = Config()  # Assuming this reads your config.json
 
-
     # Create the Worker with all services
-    worker = Worker(data_generator, streaming_service, batch_service)
+    worker = Worker(config)
 
     # Start the worker threads
     worker.start()  # This should start both the streaming and batch processes
