@@ -90,6 +90,7 @@ class BatchConfig:
         self.cleanup_after = cleanup_after
         self.connection = connection
         self.data_description = data_description
+        self.datetime_format_string = '%Y%m%d %H%M%S %f %z'
 
 
 class Config:

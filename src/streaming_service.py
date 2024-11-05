@@ -25,7 +25,7 @@ class StreamingService:
     }
     
     
-    def __init__(self, config: Any) -> None:
+    def __init__(self, config: Dict) -> None:
         """
         Initializes the StreamingService with configuration and sets up the event handler.
         
@@ -45,7 +45,7 @@ class StreamingService:
         self.connection_details = config.connection
         self.data_description = config.data_description
 
-        self.data_generator = DataGenerator(config)
+        self.data_generator = DataGenerator(self.data_description, config.datetime_format_string)
 
         self.connect_to = self.connection_details['service']
 

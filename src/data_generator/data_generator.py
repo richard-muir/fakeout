@@ -18,15 +18,15 @@ class DataGenerator:
         datatype_lookup (Dict[str, Callable]): Mapping of data types to generation methods.
     """
     
-    def __init__(self, config: Config) -> None:
+    def __init__(self, data_description: Dict, datetime_format_string: str) -> None:
         """
         Initializes the DataGenerator with configuration settings.
 
         Args:
             config (Config): Configuration object containing settings for data generation.
         """
-        self.datetime_format_string = config.datetime_format_string
-        self.data_description = config.data_description
+        self.data_description = data_description
+        self.datetime_format_string = datetime_format_string
         self.keep_on_swimming = True
         self.datatype_lookup = {
             'category' : self._generate_categorical_data,
