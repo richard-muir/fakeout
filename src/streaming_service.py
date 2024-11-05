@@ -70,4 +70,4 @@ class StreamingService:
         """
         Generates a chunk of data
         """
-        self.data_generator.generate(num_records=self.block_size)
+        return self.data_generator.generate(num_records=self.block_size)
