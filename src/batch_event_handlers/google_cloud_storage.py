@@ -90,7 +90,7 @@ class GoogleCloudStorageConnection(BaseBatchConnection):
 
 
 
-    def clean_old_uploads(self, cutoff_time: datetime, filename_prefix: str) -> None:
+    def clean_old_exports(self, cutoff_time: datetime, filename_prefix: str) -> None:
         """
         Cleans up old uploads from the Google Cloud Storage bucket based on the specified cutoff time.
 
