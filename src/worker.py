@@ -32,10 +32,10 @@ class Worker:
         self.batch_services = []
         self.keep_running = True
 
-        for streaming_service in config.get('streaming_configs', []):
+        for streaming_service in config.streaming_configs:
             self.streaming_services.append(StreamingService(streaming_service))
 
-        for batch_service in config.get('batch_configs', []):
+        for batch_service in config.batch_configs:
             self.batch_services.append(BatchService(batch_service))
         
 # TODO: Need to fix the threading for multiple streaming and batch services
