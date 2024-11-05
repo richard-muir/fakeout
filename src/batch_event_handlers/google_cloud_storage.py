@@ -59,7 +59,7 @@ class GoogleCloudStorageConnection(BaseBatchConnection):
         """
         creds_path = os.path.join("_creds", self.credentials_path)
         self.creds = service_account.Credentials.from_service_account_file(creds_path)
-        self.client = storage.Client()
+        self.client = storage.Client(credentials=self.creds)
 
 
     def export(self, data: Any, filename: str):

@@ -61,13 +61,13 @@
       "interval" : 3600,
       "size" : 1000,
       "randomise" : true,
-      "filetype" : "csv",
+      "filetype" : "json",
       "cleanup_after" : 60,
       "connection" : {
         "service" : "google_cloud_storage",
         "project_id": "fakeout-440306",
-        "bucket_name": "your-bucket-name",
-        "folder_path": "your-folder-path",
+        "bucket_name": "fakeout-test-bucket-1",
+        "folder_path": "folder-1",
         "credentials_path": "GOOGLE_APPLICATION_CREDENTIALS.json"
       },
       "data_description" : [
