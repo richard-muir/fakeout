@@ -42,7 +42,7 @@ class PubSubEventHandler(BaseEventHandler):
         Args:
             connection (Dict[str, Any]): Pub/Sub connection details.
         """
-        super().__init__(connection)
+        super().__init__()
         self.project_id = connection['project_id']
         self.topic_id = connection['topic_id']
         self.credentials_path = connection['credentials_path']

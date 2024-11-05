@@ -14,7 +14,7 @@ class BaseEventHandler(ABC):
                           typically provided in the configuration.
     """
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self) -> None:
         """
         Initializes the base event handler with connection credentials.
 
@@ -22,7 +22,7 @@ class BaseEventHandler(ABC):
             config (dict): Configuration dictionary containing credentials and other settings 
                            needed for connecting to the target service.
         """
-        self.connection_creds = config.streaming_creds  # Stores connection credentials from config
+        pass
 
     @abstractmethod
     def connect(self):
