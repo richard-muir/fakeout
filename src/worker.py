@@ -48,7 +48,7 @@ class Worker:
 
         # Create and start a thread for each streaming service
         self.streaming_threads = [
-            Thread(target=self._streaming_loop, args=(service,))
+            Thread(target=self._run_streaming_service, args=(service,))
             for service in self.streaming_services
         ]
 
