@@ -36,7 +36,7 @@ class BaseBatchConnection(ABC):
         pass
 
     @abstractmethod
-    def clean_old_uploads(self, cutoff_time: datetime) -> None:
+    def clean_old_exports(self, cutoff_time: datetime, filename_prefix: str) -> None:
         """
         Cleans up old uploads based on the specified cutoff time.
 
