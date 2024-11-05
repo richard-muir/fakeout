@@ -44,6 +44,7 @@ class StreamingConfig:
         self.randomise = randomise
         self.connection = connection
         self.data_description = data_description
+        # Hardcode this now, but can allow it in the config later
         self.datetime_format_string = '%Y%m%d %H%M%S %f %z'
 
 class BatchConfig:
@@ -90,6 +91,7 @@ class BatchConfig:
         self.cleanup_after = cleanup_after
         self.connection = connection
         self.data_description = data_description
+        # Hardcode this now, but can allow it in the config later
         self.datetime_format_string = '%Y%m%d %H%M%S %f %z'
 
 
