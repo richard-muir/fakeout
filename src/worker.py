@@ -1,5 +1,4 @@
 import time
-import queue
 from threading import Thread
 from typing import Any, List
 
@@ -19,8 +18,7 @@ class Worker:
     """
     def __init__(
             self, 
-            streaming_services: List[StreamingService], 
-            batch_services: List[BatchService]
+            config
             ) -> None:
         """
         Initializes the Worker with data generation, streaming, and batch services.
@@ -30,10 +28,15 @@ class Worker:
             streaming_service: Streaming service instance for sending data to a stream.
             batch_service: Batch service instance for saving data in batches.
         """
-        self.streaming_services = streaming_services
-        self.batch_services = batch_services
+        self.streaming_services = []
+        self.batch_services = []
         self.keep_running = True
-        self.data_queue = queue.Queue()  # Create a shared queue
+
+        for streaming_service in config.get('streaming_configs', []):
+            self.streaming_services.append(StreamingService(streaming_service))
+
+        for batch_service in config.get('batch_configs', []):
+            self.batch_services.append(BatchService(batch_service))
         
 # TODO: Need to fix the threading for multiple streaming and batch services
     def start(self) -> None:
