@@ -3,4 +3,5 @@ numpy==1.26.4           # Fix the version number below to in order to maintain c
 pandas==2.1.0           # For data manipulation and exporting to CSV
 pytest==7.1.2           # For running tests
 google-cloud-pubsub     # To handle interactions with pub/sub
+google-cloud-storage    # To handle interactions with storage
 pydantic                # JSON schema validation
