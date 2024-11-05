@@ -55,6 +55,7 @@ class BatchConnectionCredsGCP(BaseModel):
 class BatchLocalCreds(BaseModel):
     service: Literal['local']
     port: str
+    folder_path: str
 
 
 class StreamingConnectionCredsPubSub(BaseModel):
