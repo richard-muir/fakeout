@@ -80,10 +80,14 @@ class StreamingConfig(BaseModel):
 
 class BatchConfig(BaseModel):
     name: str
-    filetype: Literal['csv', 'json', 'parquet']
+    filetype: Literal[
+        # 'csv', 
+        'json',
+        # 'parquet'
+        ]
     interval: int = 60*60*24 # Daily
     size: int = 1000 # Rows
-    cleanup_after: int = 60*60*24*7 # Weekly
+    cleanup_after: Union[int, None] = 60*60*24*7 # Weekly
     randomise: bool = False
     connection: Union[
         BatchLocalCreds,
