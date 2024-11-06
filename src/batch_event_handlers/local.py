@@ -51,8 +51,10 @@ class LocalStorageConnection(BaseBatchConnection):
     def connect(self) -> None:
         """
         Establishes a connection to the local filesystem.
+        Creates the folder if necessary.
 
         """
+        os.makedirs(self.folder_path, exist_ok=True)
         return True
 
 
@@ -77,7 +79,7 @@ class LocalStorageConnection(BaseBatchConnection):
         """
         deleted_files = []
         # Iterate through files in the folder
-        for filename in os.listdir(self.folder):
+        for filename in os.listdir(self.folder_path):
             if filename.startswith(filename_prefix):  # Check if it's an export file
                 file_time = self.__parse_timestamp_from_filename(filename)
                 
