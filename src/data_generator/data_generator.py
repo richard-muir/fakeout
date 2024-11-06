@@ -41,10 +41,12 @@ class DataGenerator:
             Dict[str, Any]: A dictionary containing a data record with a timestamp 
             and fields based on the data description in the configuration.
         """
+        records = []
         count = 0
         while self.keep_on_swimming and (num_records is None or count < num_records):
-            yield self._generate_fake_data()
+            records.append(self._generate_fake_data())
             count += 1
+        return records
 
     def stop(self) -> None:
         """
