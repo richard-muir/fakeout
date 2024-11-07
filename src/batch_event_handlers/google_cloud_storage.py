@@ -83,10 +83,9 @@ class GoogleCloudStorageConnection(BaseBatchConnection):
         bucket = self.client.bucket(self.bucket_name)
         blob = bucket.blob(f"{self.folder_path}/{filename}")
 
-        # Convert data to JSON if it's a dictionary
-        if isinstance(data, dict):
-            data = json.dumps(data)
+        data = json.dumps(data)
 
+        print(type(data))
         blob.upload_from_string(data)
         print(f"Data successfully uploaded to {self.bucket_name}/{self.folder_path}.")
 

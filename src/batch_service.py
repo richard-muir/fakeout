@@ -60,7 +60,10 @@ class BatchService:
             raise ValueError(f"Service '{self.connect_to}' is not supported.")
         
         self.event_handler = self.EVENT_HANDLER_LOOKUP[self.connect_to](config)
-        self.event_handler.connect()    
+        self.event_handler.connect()
+        # Generate and upload the first batch
+        data = self.generate()
+        self.export_batch(data)
 
 
     def generate(self) -> List:
