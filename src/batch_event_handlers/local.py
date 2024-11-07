@@ -34,7 +34,7 @@ class LocalStorageConnection(BaseBatchConnection):
             Uploads data to the designated path within the GCS bucket.
     """
 
-    def __init__(self, connection: Dict[str, Any]) -> None:
+    def __init__(self, name, connection: Dict[str, Any]) -> None:
         """
         Initializes the GoogleCloudStorageConnection with provided connection details.
 

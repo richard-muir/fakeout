@@ -53,7 +53,7 @@ class StreamingService:
         if self.connect_to not in self.EVENT_HANDLER_LOOKUP:
             raise ValueError(f"Service '{self.connect_to}' is not supported.")
         
-        self.event_handler = self.EVENT_HANDLER_LOOKUP[self.connect_to](self.connection_details)
+        self.event_handler = self.EVENT_HANDLER_LOOKUP[self.connect_to](self.service_name, self.connection_details)
         self.event_handler.connect()
         
     def push(self, data: List[Dict[str, Any]]) -> None:
