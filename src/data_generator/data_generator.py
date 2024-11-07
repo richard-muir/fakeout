@@ -43,8 +43,9 @@ class DataGenerator:
         """
         records = []
         count = 0
+        timestamp = self._generate_timestamp_data()
         while self.keep_on_swimming and (num_records is None or count < num_records):
-            records.append(self._generate_fake_data())
+            records.append(self._generate_fake_data(timestamp))
             count += 1
         return records
 
@@ -54,7 +55,7 @@ class DataGenerator:
         """
         self.keep_on_swimming = False  # Method to set the flag to stop
 
-    def _generate_fake_data(self) -> Dict[str, Any]:
+    def _generate_fake_data(self, base_data) -> Dict[str, Any]:
         """
         Generates a single data record with a timestamp and other fields defined 
         in the configuration.
@@ -62,20 +63,18 @@ class DataGenerator:
         Returns:
             Dict[str, Any]: A dictionary containing generated data fields and a timestamp.
         """
-        all_data = self._generate_timestamp_data()
-        
         for datapoint in self.data_description:
             try:
                 data_type = datapoint['data_type']
                 name = datapoint['name']
                 allowable_values = datapoint['allowable_values']
                 generating_fn = self.datatype_lookup[data_type]
-                all_data.update(generating_fn(name, allowable_values))
+                base_data.update(generating_fn(name, allowable_values))
             except Exception as e:
                 print(f"Error generating data for {name}: {e}")
                 continue  # Skip this data poin
                               
-        return all_data
+        return base_data
 
     def _generate_timestamp_data(self) -> str:
         """
