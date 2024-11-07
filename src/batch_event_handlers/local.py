@@ -11,7 +11,7 @@ from google.oauth2 import service_account
 from google.auth.exceptions import DefaultCredentialsError
 
 from .base import BaseBatchConnection
-from ..config import Config
+from config import Config
 
 
 
@@ -139,7 +139,7 @@ class LocalStorageConnection(BaseBatchConnection):
     def __delete_file(self, filename: str) -> None:
         """Deletes the specified file and logs the deletion."""
         try:
-            file_path = os.path.join(self.folder, filename)
+            file_path = os.path.join(self.folder_path, filename)
             os.remove(file_path)
             print(f"Deleted old export file: {file_path}")
         except self.ALL_POSSIBLE_ERRORS as e:

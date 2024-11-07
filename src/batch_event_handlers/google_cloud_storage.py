@@ -8,7 +8,7 @@ from google.oauth2 import service_account
 from google.auth.exceptions import DefaultCredentialsError
 
 from .base import BaseBatchConnection
-from ..config import Config
+from config import Config
 
 
 

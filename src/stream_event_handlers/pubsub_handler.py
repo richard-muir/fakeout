@@ -10,7 +10,7 @@ from google.auth.exceptions import DefaultCredentialsError, GoogleAuthError
 from google.api_core.exceptions import NotFound, Forbidden, GoogleAPIError, ServiceUnavailable, PermissionDenied
 
 from .base import BaseEventHandler
-from ..config import Config
+from config import Config
 
 
 
