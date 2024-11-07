@@ -90,7 +90,7 @@ class Worker:
             service (StreamingService): The streaming service to run.
         """
         while self.keep_running:
-            data = service.data_generator.generate()
+            data = service.data_generator.generate(num_records=service.block_size)
             service.push(data)
             time.sleep(service.interval)
 
@@ -106,9 +106,9 @@ class Worker:
         while self.keep_running:
             time.sleep(service.interval)
             # Generate batch data, export it, and clean up
-            batch_data = service.data_generator.generate_batch()
+            batch_data = service.data_generator.generate(num_records=service.block_size)
             service.export_batch(batch_data)
-            print(f"Batch data exported for service: {service.name}")
+            print(f"Batch data exported for service: {service.service_name}")
             service.clean_old_exports()
 
 

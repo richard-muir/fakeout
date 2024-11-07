@@ -8,6 +8,7 @@ from google.oauth2 import service_account
 from google.auth.exceptions import DefaultCredentialsError
 
 from .base import BaseBatchConnection
+from ..config import Config
 
 
 
@@ -33,7 +34,7 @@ class GoogleCloudStorageConnection(BaseBatchConnection):
             Uploads data to the designated path within the GCS bucket.
     """
 
-    def __init__(self, name, connection: Dict[str, Any]) -> None:
+    def __init__(self, config: Config) -> None:
         """
         Initializes the GoogleCloudStorageConnection with provided connection details.
 
@@ -43,10 +44,11 @@ class GoogleCloudStorageConnection(BaseBatchConnection):
                                          and credentials path.
         """
         super().__init__()
-        self.project_id = connection['project_id']
-        self.bucket_name = connection['bucket_name']
-        self.folder_path = connection['folder_path']
-        self.credentials_path = connection['credentials_path']
+        self.name = config.name
+        self.project_id = config.connection['project_id']
+        self.bucket_name = config.connection['bucket_name']
+        self.folder_path = config.connection['folder_path']
+        self.credentials_path = config.connection['credentials_path']
         self.client = None  # Will hold the GCS client instance
 
         

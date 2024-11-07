@@ -11,6 +11,7 @@ from google.oauth2 import service_account
 from google.auth.exceptions import DefaultCredentialsError
 
 from .base import BaseBatchConnection
+from ..config import Config
 
 
 
@@ -45,7 +46,8 @@ class LocalStorageConnection(BaseBatchConnection):
             AttributeError
             )
 
-    def __init__(self, name, connection: Dict[str, Any]) -> None:
+    def __init__(self,  config: Config) -> None:
+    # def __init__(self,  name, connection: Dict[str, Any]) -> None:
         """
         Initializes the GoogleCloudStorageConnection with provided connection details.
 
@@ -55,9 +57,10 @@ class LocalStorageConnection(BaseBatchConnection):
                                          and credentials path.
         """
         super().__init__()
-        self.name = name
-        self.port = connection['port']
-        self.folder_path = connection['folder_path']
+        self.name = config.name
+        self.port = config.connection['port']
+        self.folder_path = config.connection['folder_path']
+        self.datetime_format_string = config.datetime_format_string
 
         
     def connect(self) -> None:
@@ -161,7 +164,7 @@ class LocalStorageConnection(BaseBatchConnection):
 
         # Want to highlight additional context if it's passed
         if additional_context:
-            additional_context = f"\nAdditional context :{additional_context}"
+            additional_context = f"\nAdditional context: {additional_context}"
 
         if isinstance(exception, PermissionError):
             error_message = (

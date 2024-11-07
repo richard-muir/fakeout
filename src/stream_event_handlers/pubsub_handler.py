@@ -10,6 +10,7 @@ from google.auth.exceptions import DefaultCredentialsError, GoogleAuthError
 from google.api_core.exceptions import NotFound, Forbidden, GoogleAPIError, ServiceUnavailable, PermissionDenied
 
 from .base import BaseEventHandler
+from ..config import Config
 
 
 
@@ -47,19 +48,18 @@ class PubSubEventHandler(BaseEventHandler):
             PermissionDenied
             )
 
-    def __init__(self, name, connection: Dict[str, Any]) -> None:
+    def __init__(self, config: Config) -> None:
         """
         Initializes the PubSubEventHandler with settings from the connection dictionary.
         
         Args:
             connection (Dict[str, Any]): Pub/Sub connection details.
         """
-        #TODO: Pass Connection name into this for better error reporting
         super().__init__()
-        self.name = name
-        self.project_id = connection['project_id']
-        self.topic_id = connection['topic_id']
-        self.credentials_path = connection['credentials_path']
+        self.name = config.name
+        self.project_id = config.connection['project_id']
+        self.topic_id = config.connection['topic_id']
+        self.credentials_path = config.connection['credentials_path']
         self.publisher = None
         self.topic_path = None
               
