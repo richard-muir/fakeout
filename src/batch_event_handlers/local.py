@@ -44,6 +44,7 @@ class LocalStorageConnection(BaseBatchConnection):
                                          and credentials path.
         """
         super().__init__()
+        self.name = name
         self.port = connection['port']
         self.folder_path = connection['folder_path']
 
