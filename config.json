@@ -29,11 +29,11 @@
       "name" : "streaming_2",
       "interval" : 10,
       "size" : 3,
-      "randomise" : true,
+      "randomise" : false,
       "connection" : {
           "service" : "pubsub",
           "project_id": "fakeout-440306",
-          "topic_id": "fakeout-receive-2",
+          "topic_id": "feakeout-receive-2",
           "credentials_path": "GOOGLE_APPLICATION_CREDENTIALS.json"
       },
       "data_description": [
@@ -60,7 +60,7 @@
       "name" : "batch_1",
       "interval" : 3600,
       "size" : 1000,
-      "randomise" : true,
+      "randomise" : false,
       "filetype" : "json",
       "cleanup_after" : 60,
       "connection" : {
@@ -93,7 +93,7 @@
       "interval" : 30,
       "filetype" : "json",
       "size" : 1000,
-      "randomise" : true,
+      "randomise" : false,
       "cleanup_after" : 60,
       "connection" : {
         "service" : "local",
