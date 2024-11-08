@@ -1,8 +1,8 @@
 # Ignore virtual environment folder
 venv/
 
-# Ignore creds folder
-_creds/
+# Ignore all files in creds folder
+_creds/*.json
 
 # Ignore Python bytecode files
 __pycache__/
