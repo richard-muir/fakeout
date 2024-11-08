@@ -16,10 +16,11 @@ def signal_handler(sig, frame):
 
 
 if __name__ == "__main__":
-    # Setup argument parser
-    parser = argparse.ArgumentParser(description="Run the data generator application.")
-    parser.add_argument("--config", type=str, required=True, help="Path to the configuration file.")
-    args = parser.parse_args()  # Parse command-line arguments
+    # Setup argument parser for command line running. 
+    #  Not necessary just yet.
+    # parser = argparse.ArgumentParser(description="Run the data generator application.")
+    # parser.add_argument("--config", type=str, required=True, help="Path to the configuration file.")
+    # args = parser.parse_args()  # Parse command-line arguments
 
 
     # Setup signal handling for graceful shutdown
@@ -27,7 +28,9 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, signal_handler)
 
     # Load configuration
-    config = Config(args.config)  # Assuming this reads your config.json
+    # Use this line if running from the command line with different config args
+    # config = Config(args.config)  # Assuming this reads your config.json
+    config = Config()
 
     # Create the Worker with all services
     worker = Worker(config)

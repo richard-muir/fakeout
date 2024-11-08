@@ -101,7 +101,8 @@ class PubSubEventHandler(BaseEventHandler):
         try:
             data = json.dumps(data).encode("utf-8")
             future = self.client.publish(self.topic_path, data)
-            print(f"Published message ID: {future.result()}")
+            print(f"Published Pub/Sub message ID: {future.result()} to "
+                  f"{self.topic_path} in {self.project_id}")
 
         except self.ALL_POSSIBLE_ERRORS as e:
             self._handle_errors(e)
