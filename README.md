@@ -54,7 +54,7 @@ Easiest if you save it as "GOOGLE_APPLICATION_CREDENTIALS.json", otherwise you n
 Edit the `config.json` file to customize the batch and streaming services. You can pass lists of up to five of each.
 ```json
 {
-  "version": "2.0",
+  "version": "2.0",                       // The version of the service. 2.0 supports multilple streaming and batch services
   "streaming": [
     {
       "name": "example_streaming_service",
