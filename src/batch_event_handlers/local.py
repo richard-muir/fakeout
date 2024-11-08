@@ -43,7 +43,8 @@ class LocalStorageConnection(BaseBatchConnection):
             TypeError,
             Exception,
             ValueError, 
-            AttributeError
+            AttributeError,
+            json.JSONDecodeError
             )
 
     def __init__(self,  config: Config) -> None:
@@ -168,28 +169,34 @@ class LocalStorageConnection(BaseBatchConnection):
 
         if isinstance(exception, PermissionError):
             error_message = (
-                f"Error during {context} for batch export service '{self.name}': Insufficient permissions to create, write to, or access "
-                f"'{self.folder_path}'. Please check folder permissions.{additional_context}"
+                f"Error during {context} for batch export service '{self.name}': "
+                f"Insufficient permissions to create, write to, or access "
+                f"'{self.folder_path}'. Please check folder permissions."
+                f"{additional_context}"
             )
         elif isinstance(exception, OSError):
             error_message = (
-                f"Error during {context} for batch export service '{self.name}': Unable to create or access the folder "
-                f"'{self.folder_path}'. Details: {exception}{additional_context}"
+                f"Error during {context} for batch export service '{self.name}': "
+                f"Unable to create or access the folder '{self.folder_path}'. "
+                f"Details: {exception}{additional_context}"
             )
         elif isinstance(exception, FileNotFoundError):
             error_message = (
-                f"Error during {context} for batch export '{self.name}': The directory '{self.folder_path}' does not exist.\n"
+                f"Error during {context} for batch export '{self.name}': "
+                f"The directory '{self.folder_path}' does not exist.\n"
                 "Please ensure the folder path is valid.{additional_context}"
             )
         elif isinstance(exception, TypeError):
             error_message = (
-                f"Error during {context} for batch export '{self.name}': Failed to serialize data to JSON format.\n"
+                f"Error during {context} for batch export '{self.name}': "
+                f"Failed to serialize data to JSON format.\n"
                 f"Details: {exception}\n"
                 "Ensure the data is JSON serializable.{additional_context}"
             )
         else:
             error_message = (
-                f"Unexpected error during {context} for batch export service {self.name}: An error occurred while accessing "
+                f"Unexpected error during {context} for batch export service "
+                f"{self.name}: An error occurred while accessing "
                 f"'{self.folder_path}'. Details: {exception}{additional_context}"
             )
 

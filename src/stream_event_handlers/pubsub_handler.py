@@ -7,7 +7,13 @@ from typing import Any, Dict
 from google.cloud import pubsub_v1
 from google.oauth2 import service_account
 from google.auth.exceptions import DefaultCredentialsError, GoogleAuthError
-from google.api_core.exceptions import NotFound, Forbidden, GoogleAPIError, ServiceUnavailable, PermissionDenied
+from google.api_core.exceptions import (
+    NotFound, 
+    Forbidden, 
+    GoogleAPIError, 
+    ServiceUnavailable, 
+    PermissionDenied
+    )
 
 from .base import BaseEventHandler
 from config import Config
@@ -102,55 +108,75 @@ class PubSubEventHandler(BaseEventHandler):
             sys.exit(1)
 
 
-    def _handle_errors(self, exception: Exception):
+    def _handle_errors(self, exception: Exception, additional_context: str=''):
         """Handles connection and publishing related errors with descriptive messages."""
 
         # Get the name of the calling function to determine the context
         calling_function = inspect.stack()[1].function
         context = "connecting" if calling_function == "connect" else "publishing"
 
+        # Want to highlight additional context if it's passed
+        if additional_context:
+            additional_context = f"\nAdditional context: {additional_context}"
 
         if isinstance(exception, NotFound):
             error_message = (
-                f"Error during {context} for streaming service: {self.name}: The topic '{self.topic_id}' does not exist "
-                f"in project '{self.project_id}'. Please verify that the topic is created "
-                "and the project ID is correct."
+                f"Error during {context} for streaming service: {self.name}: "
+                f"The topic '{self.topic_id}' does not exist in project "
+                f"'{self.project_id}'. Please verify that the topic is created "
+                f"and the project ID is correct.{additional_context}"
             )
         elif isinstance(exception, Forbidden):
             error_message = (
-                f"Error during {context} for streaming service: {self.name}: Permission denied when accessing the topic. "
-                f"Ensure the service account has the required Pub/Sub permissions for  for {self.topic_id} in {self.project_id}."
+                f"Error during {context} for streaming service: {self.name}: "
+                f"Permission denied when accessing the topic.\nEnsure the "
+                f"service account has the required Pub/Sub permissions for "
+                f"{self.topic_id} in {self.project_id}.{additional_context}"
             )
         elif isinstance(exception, ServiceUnavailable):
             error_message = (
-                f"Error during {context} for streaming service: {self.name}: Pub/Sub service is unavailable. Please try again later."
+                f"Error during {context} for streaming service: {self.name}: "
+                f"Pub/Sub service is unavailable. Please try again later."
+                f"{additional_context}"
             )
         elif isinstance(exception, DefaultCredentialsError):
             error_message = (
-                f"Error during {context} for streaming service: {self.name}: Invalid credentials  for {self.topic_id} in {self.project_id}. Please check your service account credentials."
+                f"Error during {context} for streaming service: {self.name}: "
+                f"Invalid credentials  for {self.topic_id} in {self.project_id}. "
+                f"Please check your service account credentials."
+                f"{additional_context}"
             )
         elif isinstance(exception, GoogleAPIError):
             error_message = (
-                f"Google API error during {context} for streaming service: {self.name}: {exception}. Please check your Google Cloud configurations and network access."
+                f"Google API error during {context} for streaming service: "
+                f"{self.name}: {exception}. Please check your Google Cloud "
+                f"configurations and network access.{additional_context}"
             )
         elif isinstance(exception, FileNotFoundError):
             error_message = (
-                f"Error during {context} for streaming service: {self.name}: The credentials file was not found. "
-                "Please check that you put your Google credentials in the _creds folder, and that the filename is correct."
+                f"Error during {context} for streaming service: {self.name}: "
+                f"The credentials file was not found.\nPlease check that you "
+                f"put your Google credentials in the _creds folder, and that "
+                f"the filename is correct.{additional_context}"
             )
         elif isinstance(exception, GoogleAuthError):
             error_message = (
-                f"Error during {context} for streaming service: {self.name}: Google authentication error.\n"
-                f"Exiting the application. Please check your credentials and permissions  for {self.topic_id} in {self.project_id}."
+                f"Error during {context} for streaming service: {self.name}: "
+                f"Google authentication error.\nExiting the application. "
+                f"Please check your credentials and permissions  for "
+                f"{self.topic_id} in {self.project_id}.{additional_context}"
             )
         elif isinstance(exception, PermissionDenied):
             error_message = (
-                f"Error: Permission denied while {context} to streaming service: {self.name}.\n"
-                f"This likely indicates insufficient permissions for {self.topic_id} in {self.project_id}."
+                f"Error: Permission denied while {context} to streaming service: "
+                f"{self.name}.\nThis likely indicates insufficient permissions "
+                f"for {self.topic_id} in {self.project_id}.{additional_context}"
             )
         else:
             error_message = (
-                f"Unexpected error during {context} for streaming service: {self.name}: {exception}. Please review your configuration and credentials."
+                f"Unexpected error during {context} for streaming service: "
+                f"{self.name}: {exception}. Please review your configuration "
+                f"and credentials.{additional_context}"
             )
 
         print(error_message)
