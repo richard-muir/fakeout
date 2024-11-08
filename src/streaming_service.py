@@ -1,6 +1,7 @@
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from stream_event_handlers import *
+from data_generator import DataGenerator
 
 
 
@@ -24,7 +25,7 @@ class StreamingService:
     }
     
     
-    def __init__(self, config: Any) -> None:
+    def __init__(self, config: Dict) -> None:
         """
         Initializes the StreamingService with configuration and sets up the event handler.
         
@@ -35,18 +36,27 @@ class StreamingService:
         Raises:
             ValueError: If the specified service name is not supported.
         """
-        self.interval = config.streaming_interval
         self.n_records_pushed = 0
-        self.service_name = config.streaming_service
+
+        self.service_name = config.name
+        self.interval = config.interval
+        self.block_size = config.size
+        self.randomise = config.randomise
+        self.connection_details = config.connection
+        self.data_description = config.data_description
+
+        self.data_generator = DataGenerator(self.data_description, config.datetime_format_string)
+
+        self.connect_to = self.connection_details['service']
 
         # Validate service type, create event handler and connect
-        if self.service_name not in self.EVENT_HANDLER_LOOKUP:
-            raise ValueError(f"Service '{self.service_name}' is not supported.")
+        if self.connect_to not in self.EVENT_HANDLER_LOOKUP:
+            raise ValueError(f"Service '{self.connect_to}' is not supported.")
         
-        self.event_handler = self.EVENT_HANDLER_LOOKUP[self.service_name](config)
+        self.event_handler = self.EVENT_HANDLER_LOOKUP[self.connect_to](config)
         self.event_handler.connect()
         
-    def push(self, data: Dict[str, Any]) -> None:
+    def push(self, data: List[Dict[str, Any]]) -> None:
         """
         Publishes a data record to the event handler and increments the push counter.
         
@@ -54,10 +64,10 @@ class StreamingService:
             data (Dict[str, Any]): Data record to be published.
         """
         self.event_handler.publish(data)
-        self.n_records_pushed += 1
+        self.n_records_pushed += self.block_size
 
-    def close(self) -> None:
+    def generate(self) -> List:
         """
-        Closes the connection to the event handler, releasing resources.
+        Generates a chunk of data
         """
-        self.event_handler.close()
+        return self.data_generator.generate(num_records=self.block_size)

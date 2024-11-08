@@ -1,28 +1,117 @@
-{
-    "streaming" : {
-        "interval" : 1,
+{ 
+  "version": "2.0",
+  "streaming" : [
+    {
+      "name" : "streaming_1",
+      "interval" : 1,
+      "size" : 3,
+      "randomise" : false,
+      "connection" : {
         "service" : "pubsub",
-        "connection_creds" : {
-            "project_id": "fakeout-440306",
-            "topic_id": "fakeout-receive",
-            "credentials_path": "GOOGLE_APPLICATION_CREDENTIALS.json"
-        }
-    },
-    "batch" : {
-        "file_name" : "data_batch",
-        "interval" : 10,
-        "cleanup_after" : 60
-    },
-    "data_description": [
-      {
-        "name": "sensor_id",
-        "data_type": "category",
-        "allowable_values": ["sensor_1", "sensor_2", "sensor_3"]
+        "project_id": "fakeout-440306",
+        "topic_id": "fakeout-receive",
+        "credentials_path": "GOOGLE_APPLICATION_CREDENTIALS.json"
       },
-      {
-        "name": "value",
-        "data_type": "numeric",
-        "allowable_values": [0.0, 100.0] 
-      }
-    ]            
+      "data_description": [
+        {
+          "name": "sensor_id",
+          "data_type": "category",
+          "allowable_values": ["sensor_1", "sensor_2", "sensor_3"]
+        },
+        {
+          "name": "value",
+          "data_type": "numeric",
+          "allowable_values": [0.0, 100.0] 
+        }
+      ] 
+    },
+    {
+      "name" : "streaming_2",
+      "interval" : 10,
+      "size" : 3,
+      "randomise" : false,
+      "connection" : {
+          "service" : "pubsub",
+          "project_id": "fakeout-440306",
+          "topic_id": "feakeout-receive-2",
+          "credentials_path": "GOOGLE_APPLICATION_CREDENTIALS.json"
+      },
+      "data_description": [
+        {
+          "name": "machine_id",
+          "data_type": "category",
+          "allowable_values": ["Machine_1", "Machine_2", "Machine_3"]
+        },
+        {
+          "name": "value_1",
+          "data_type": "numeric",
+          "allowable_values": [0.0, 1.0] 
+        },
+        {
+          "name": "value_2",
+          "data_type": "numeric",
+          "allowable_values": [100, 1000] 
+        }
+      ] 
+    }
+  ],
+  "batch" : [
+    {
+      "name" : "batch_1",
+      "interval" : 3600,
+      "size" : 1000,
+      "randomise" : false,
+      "filetype" : "json",
+      "cleanup_after" : 60,
+      "connection" : {
+        "service" : "google_cloud_storage",
+        "project_id": "fakeout-440306",
+        "bucket_name": "fakeout-test-bucket-1",
+        "folder_path": "folder-1",
+        "credentials_path": "GOOGLE_APPLICATION_CREDENTIALS.json"
+      },
+      "data_description" : [
+        {
+          "name": "machine_id",
+          "data_type" : "category",
+          "allowable_values": ["Machine_1", "Machine_2", "Machine_3"]
+        },
+        {
+          "name": "value_1",
+          "data_type": "numeric",
+          "allowable_values": [0.0, 1.0] 
+        },
+        {
+          "name": "value_2",
+          "data_type": "numeric",
+          "allowable_values": [100, 1000] 
+        }
+      ]
+    },
+    {
+      "name" : "batch_2",
+      "interval" : 30,
+      "filetype" : "json",
+      "size" : 1000,
+      "randomise" : false,
+      "cleanup_after" : 60,
+      "connection" : {
+        "service" : "local",
+        "port" : "8080",
+        "folder_path": "your-folder-path"
+      },
+      "data_description" : [
+        {
+          "name": "sensor_id",
+          "data_type": "category",
+          "allowable_values": ["sensor_1", "sensor_2", "sensor_3"]
+        },
+        {
+          "name": "value",
+          "data_type": "numeric",
+          "allowable_values": [0.0, 100.0] 
+        }
+      ]
+    }
+  ]      
 }

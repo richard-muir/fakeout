@@ -1,0 +1,2 @@
+from .google_cloud_storage import GoogleCloudStorageConnection
+from .local import LocalStorageConnection

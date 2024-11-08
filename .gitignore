@@ -19,3 +19,6 @@ __pycache__/
 
 # Ignore other files
 *.DS_Store
+
+# Ignore this planning doc
+target_project_structure.md
