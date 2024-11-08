@@ -1,4 +1,5 @@
-from datetime import datetime
+from random import choice, uniform, randint
+from datetime import datetime, timedelta
 import random
 import pytz
 from typing import List, Dict, Any, Iterator, Optional
@@ -29,8 +30,12 @@ class DataGenerator:
         self.datetime_format_string = datetime_format_string
         self.keep_on_swimming = True
         self.datatype_lookup = {
-            'category' : self._generate_categorical_data,
-            'numeric' : self._generate_numeric_data
+            'category': self._generate_categorical_data,
+            'float': self._generate_float_data,
+            'integer': self._generate_integer_data,
+            'bool': self._generate_boolean_data,
+            'date': self._generate_date_data,
+            'datetime': self._generate_datetime_data
         }
 
     def generate(self, num_records: Optional[int] = 1) -> Iterator[Dict[str, Any]]:
@@ -86,33 +91,110 @@ class DataGenerator:
         now = datetime.now(pytz.utc)
         return {'datetime': now.strftime(self.datetime_format_string)}
     
-    def _generate_categorical_data(
-            self, 
-            name: str, 
-            choices: List[str]
-            ) -> Dict[str, str]:
-        """
-        Generates a categorical data field by randomly selecting from provided choices.
+    def _generate_categorical_data(self, field_config):
+        return choice(field_config['allowable_values'])
 
-        Args:
-            name (str): Name of the data field.
-            choices (List[str]): List of possible categorical values.
+    def _generate_float_data(self, field_config):
+        min_val, max_val = field_config['allowable_values']
+        return round(uniform(min_val, max_val), 2) if not field_config['allow_nulls'] else None
 
-        Returns:
-            Dict[str, str]: A dictionary containing the generated categorical data.
-        """
-        return {name : random.choice(choices)}
+    def _generate_integer_data(self, field_config):
+        min_val, max_val = field_config['allowable_values']
+        return randint(min_val, max_val) if not field_config['allow_nulls'] else None
+
+    def _generate_boolean_data(self, field_config):
+        return choice([True, False]) if not field_config['allow_nulls'] else None
+
+    def _generate_date_data(self, field_config):
+        start_date = datetime.strptime(field_config['allowable_values'][0], '%Y-%m-%d')
+        end_date = datetime.strptime(field_config['allowable_values'][1], '%Y-%m-%d')
+        delta_days = (end_date - start_date).days
+        return (start_date + timedelta(days=randint(0, delta_days))).date() if not field_config['allow_nulls'] else None
+
+    def _generate_datetime_data(self, field_config):
+        start_datetime = datetime.strptime(field_config['allowable_values'][0], '%Y-%m-%d %H:%M:%S')
+        end_datetime = datetime.strptime(field_config['allowable_values'][1], '%Y-%m-%d %H:%M:%S')
+        delta_seconds = int((end_datetime - start_datetime).total_seconds())
+        return start_datetime + timedelta(seconds=randint(0, delta_seconds)) if not field_config['allow_nulls'] else None
     
-    def _generate_numeric_data(self, name: str, data_range: List[float]) -> Dict[str, float]:
+    def _generate_categorical_data(self, field_config: Dict) -> Dict:
         """
-        Generates a numeric data field within the specified range.
+        Generates a categorical data field with the option to return None based on proportion_nulls.
 
         Args:
-            name (str): Name of the data field.
-            data_range (List[float]): A list with two values, specifying the minimum 
-            and maximum values for the numeric range.
+            field_config (Dict): Configuration dictionary for the field.
 
         Returns:
-            Dict[str, float]: A dictionary containing the generated numeric data.
+            Dict[str, Union[str, None]]: A dictionary containing the generated categorical data or None.
         """
-        return {name : random.uniform(data_range[0], data_range[1])}
+        if random.random() < field_config.get("proportion_nulls", 0):
+            return {field_config["name"]: None}
+        return {field_config["name"]: random.choice(field_config["allowable_values"])}
+    
+    def _generate_integer_data(self, field_config: Dict) -> Dict:
+        """
+        Generates an integer data field within the specified range, with optional nulls.
+
+        Args:
+            field_config (Dict): Configuration dictionary for the field.
+
+        Returns:
+            Dict[str, Union[int, None]]: A dictionary containing the generated integer data or None.
+        """
+        if random.random() < field_config.get("proportion_nulls", 0):
+            return {field_config["name"]: None}
+        data_range = field_config["allowable_values"]
+        return {field_config["name"]: random.randint(data_range[0], data_range[1])}
+    
+    def _generate_boolean_data(self, field_config: Dict) -> Dict:
+        """
+        Generates a boolean data field with optional nulls.
+
+        Args:
+            field_config (Dict): Configuration dictionary for the field.
+
+        Returns:
+            Dict[str, Union[bool, None]]: A dictionary containing the generated boolean data or None.
+        """
+        if random.random() < field_config.get("proportion_nulls", 0):
+            return {field_config["name"]: None}
+        return {field_config["name"]: random.choice([True, False])}
+    
+    def _generate_date_data(self, field_config: Dict) -> Dict:
+        """
+        Generates a date string within the specified range, with optional nulls.
+
+        Args:
+            field_config (Dict): Configuration dictionary for the field.
+
+        Returns:
+            Dict[str, Union[str, None]]: A dictionary containing the generated date data or None.
+        """
+        if random.random() < field_config.get("proportion_nulls", 0):
+            return {field_config["name"]: None}
+        
+        #TODO add in more date type checking to support different formats
+        start_date = datetime.strptime(field_config["allowable_values"][0], "%Y-%m-%d")
+        end_date = datetime.strptime(field_config["allowable_values"][1], "%Y-%m-%d")
+        random_date = start_date + timedelta(days=random.randint(0, (end_date - start_date).days))
+        return {field_config["name"]: random_date.strftime("%Y-%m-%d")}
+    
+    def _generate_datetime_data(self, field_config: Dict) -> Dict:
+        """
+        Generates a datetime string within the specified range, with optional nulls.
+
+        Args:
+            field_config (Dict): Configuration dictionary for the field.
+
+        Returns:
+            Dict[str, Union[str, None]]: A dictionary containing the generated datetime data or None.
+        """
+        if random.random() < field_config.get("proportion_nulls", 0):
+            return {field_config["name"]: None}
+        #TODO add in more date type checking to support different formats. 
+        #  Consider pulling into a different function to support _generate_date_data
+        start_datetime = datetime.strptime(field_config["allowable_values"][0], "%Y-%m-%d %H:%M:%S")
+        end_datetime = datetime.strptime(field_config["allowable_values"][1], "%Y-%m-%d %H:%M:%S")
+        random_datetime = start_datetime + timedelta(seconds=random.randint(0, int((end_datetime - start_datetime).total_seconds())))
+        return {field_config["name"]: random_datetime.strftime("%Y-%m-%d %H:%M:%S")}
+    
