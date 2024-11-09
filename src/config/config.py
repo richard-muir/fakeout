@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, model_validator, field_validator
 
 
 # TODO: # Add these later
-        # 'integer', 'float', 'bool', 'email', 'name',
+        # 'name',
         # 'phone', 'datetime', 'nested', 'image', 'video'
 # TODO: Field decriptions
 
@@ -132,6 +132,26 @@ class StreamingConnectionCredsPubSub(BaseModel):
 
 
 class StreamingConfig(BaseModel):
+    """
+    Represents the configuration settings for a single streaming service in FakeOut.
+
+    Attributes:
+        name (str): The unique name of the streaming service configuration.
+        interval (int): The interval in seconds between each data streaming event.
+        size (int): The number of records to generate per streaming interval.
+        randomise (bool): Indicates whether the data generated should be randomized.
+        connection (Dict[str, Union[str, int]]): The connection details for the streaming service.
+            Expected keys may include:
+                - 'service' (str): The name of the streaming service (e.g., 'pubsub').
+                - 'project_id' (str): The Google Cloud project ID if using Google Pub/Sub.
+                - 'topic_id' (str): The Pub/Sub topic ID to which data is streamed.
+                - 'credentials_path' (str): Path to the service account JSON file for authentication.
+        data_description (List[Dict[str, Union[str, List]]]): A list of dictionaries defining
+            the structure of each data record. Each dictionary includes:
+                - 'name' (str): The name of the data field.
+                - 'data_type' (str): The type of data (e.g., 'category', 'numeric').
+                - 'allowable_values' (List): A list of possible values or range for the field.
+    """
     name: str
     interval: int = 60 # Every minute
     size: int = 3 # rows
@@ -144,6 +164,30 @@ class StreamingConfig(BaseModel):
 
 
 class BatchConfig(BaseModel):
+    """
+    Represents the configuration settings for a single batch processing service in FakeOut.
+
+    Attributes:
+        name (str): The unique name of the batch service configuration.
+        interval (int): The interval in seconds between each batch file export.
+        size (int): The number of records to include in each batch export.
+        randomise (bool): Indicates whether the data in each batch should be randomized.
+        filetype (str): The file format for batch export (e.g., 'csv', 'json').
+        cleanup_after (int): The time in minutes after which the batch file is deleted.
+        connection (Dict[str, Union[str, int]]): The connection details for the batch export service.
+            Expected keys may include:
+                - 'service' (str): The type of storage service (e.g., 'google_cloud_storage', 'local').
+                - 'project_id' (str): The Google Cloud project ID if using Google Cloud Storage.
+                - 'bucket_name' (str): The bucket name for storing files if using Google Cloud Storage.
+                - 'folder_path' (str): The folder path within the bucket for file storage.
+                - 'port' (str): The port number for a local storage service, if applicable.
+                - 'credentials_path' (str): Path to the service account JSON file for authentication.
+        data_description (List[Dict[str, Union[str, List]]]): A list of dictionaries defining
+            the structure of each data record. Each dictionary includes:
+                - 'name' (str): The name of the data field.
+                - 'data_type' (str): The type of data (e.g., 'category', 'numeric').
+                - 'allowable_values' (List): A list of possible values or range for the field.
+    """
     name: str
     filetype: Literal[
         # 'csv', 
@@ -163,6 +207,9 @@ class BatchConfig(BaseModel):
 
 
 class Config(BaseModel):
+    """
+    Main configuration class for FakeOut, handling multiple streaming and batch configurations.
+    """
     version: str
     streaming_configs: List[StreamingConfig] = Field(max_items=5)
     batch_configs: List[BatchConfig] = Field(max_items=5)

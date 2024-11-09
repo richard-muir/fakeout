@@ -184,4 +184,3 @@ class DataGenerator:
         end_datetime = datetime.strptime(field_config.allowable_values[1], "%Y-%m-%d %H:%M:%S")
         random_datetime = start_datetime + timedelta(seconds=random.randint(0, int((end_datetime - start_datetime).total_seconds())))
         return {field_config.name: random_datetime.strftime("%Y-%m-%d %H:%M:%S")}
-    

@@ -116,6 +116,7 @@ Local Storage
 }
 ```
 
+
 #### Data Definitions
 Each dictionary in this list corresponds to a generated data field (or a column in aa csv).
 
@@ -167,11 +168,11 @@ Each dictionary in this list corresponds to a generated data field (or a column 
     "proportion_nulls": 0                       // Probability of null values (0 to 1)
   }
 ]
-
 ```
 
 
-Output data looks like below. The generated_at key is automatically generated, and the rest are determined from the config:
+
+Output data looks like below. The datetime key is automatically generated, and the rest are determined from the config:
 ```json
 [
     {
