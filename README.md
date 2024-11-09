@@ -122,42 +122,76 @@ Each dictionary in this list corresponds to a generated data field (or a column 
 ```json
 "data_description": [
   {
-    "name": "sensor_id",                                     // Name of the field in the generated data
-    "data_type": "category",                                 // Specifies a categorical data type
-    "allowable_values": ["sensor_1", "sensor_2", "sensor_3"] // List of allowed values for categorical data
+    "name": "sensor_id",                        // Name of the field in the generated data
+    "data_type": "category",                    // Specifies a categorical data type
+    "allowable_values": [                       // List of allowed values - can duplicate values to force proportions
+      "sensor_1", 
+      "sensor_1", 
+      "sensor_2", 
+      "sensor_3"
+      ], 
+    "proportion_nulls": 0                       // Probability of null values (0 to 1)
   },
   {
-    "name": "value",                          // Name of the field in the generated data
-    "data_type": "numeric",                   // Specifies a numeric data type
-    "allowable_values": [0.0, 100.0]          // Specifies a range as [min, max] for numeric data
+    "name": "float_1",                          // Name of the field in the generated data
+    "data_type": "float",                       // Specifies a float data type
+    "allowable_values": [0.0, 100.0],           // Specifies range as [min, max] for floats
+    "proportion_nulls": 0                       // Probability of null values (0 to 1)
+  },
+  {
+    "name": "integer_1",                        // Name of the field in the generated data
+    "data_type": "integer",                     // Specifies an integer data type
+    "allowable_values": [0, 10],                // Specifies range as [min, max] for integers
+    "proportion_nulls": 0                       // Probability of null values (0 to 1)
+  },
+  {
+    "name": "bool_1",                           // Name of the field in the generated data
+    "data_type": "bool",                        // Specifies a boolean data type
+    "proportion_nulls": 0                       // Probability of null values (0 to 1)
+  },
+  {
+    "name": "date_1",                           // Name of the field in the generated data
+    "data_type": "date",                        // Specifies a date data type
+    "allowable_values": [                       // Specifies range as [start_date, end_date]
+      "2024-01-01",
+      "2024-12-31"
+      ], 
+    "proportion_nulls": 0                       // Probability of null values (0 to 1)
+  },
+  {
+    "name": "datetime_1",                       // Name of the field in the generated data
+    "data_type": "datetime",                    // Specifies a datetime data type
+    "allowable_values": [                       // Range as [start_datetime, end_datetime]
+      "2024-01-01 00:00:00", 
+      "2024-12-31 00:00:00"], 
+    "proportion_nulls": 0                       // Probability of null values (0 to 1)
   }
 ]
+
 ```
 
 
-Output data looks like below. The datetime key is automatically generated, and the rest are determined from the config:
+Output data looks like below. The generated_at key is automatically generated, and the rest are determined from the config:
 ```json
 [
     {
-        "datetime": "20241031 152500 098457 +0000",
-        "sensor_id": "sensor_1",
-        "value": 47.28257845861492
-    },
-    {
-        "datetime": "20241031 152501 189349 +0000",
-        "sensor_id": "sensor_1",
-        "value": 79.39957680017326
-    },
-    {
-        "datetime": "20241031 152502 279582 +0000",
+        "generated_at": "20241109 084156 941095 +0000",
         "sensor_id": "sensor_3",
-        "value": 82.46778096117309
+        "float_1": 0.22571442727073343,
+        "integer_1": 1,
+        "bool_1": true,
+        "date_1": "2024-03-06",
+        "datetime_1": "2024-12-27 02:06:58"
     },
     {
-        "datetime": "20241031 152503 367012 +0000",
+        "generated_at": "20241109 084156 941095 +0000",
         "sensor_id": "sensor_2",
-        "value": 69.38714157423425
-    },
+        "float_1": 6.876216148479335,
+        "integer_1": 10,
+        "bool_1": false,
+        "date_1": "2024-11-20",
+        "datetime_1": "2024-11-21 11:23:23"
+    }
 ]
 ```
 

@@ -7,7 +7,7 @@ services:
       - ./public:/app/public  # Mount the public folder for live updates
     # environment:
     #   - GOOGLE_APPLICATION_CREDENTIALS=/app/_creds/GOOGLE_APPLICATION_CREDENTIALS.json
-    command: python src/main.py
+    command: python src/main.py --config "config.json"
 
 
   fakeout_batch:
