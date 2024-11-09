@@ -52,11 +52,8 @@ class DataGenerator:
 
         while self.keep_on_swimming and (num_records is None or count < num_records):
             new_row = self._generate_fake_data(generated_at)
-            print(new_row)
             records.append(new_row)
             count += 1
-
-        print(records)
         return records
 
     def stop(self) -> None:

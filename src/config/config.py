@@ -64,8 +64,7 @@ class FloatField(BaseDataField):
     validate_fields = field_validator("allowable_values")(validate_values_different)
         
 
-# Inherits from this because we don't want to validate allowable values
-class BoolField(BaseModel):
+class BoolField(BaseDataField):
     name: str
     data_type: Literal['bool']
 
