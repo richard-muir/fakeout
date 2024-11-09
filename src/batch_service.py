@@ -50,10 +50,10 @@ class BatchService:
         self.datetime_format_string = config.datetime_format_string
 
         # Overwrite this from the config to place all the files in the public directory
-        self.batch_data_destination = os.path.join(batch_path, config.connection['folder_path'])
-        config.connection['folder_path'] = self.batch_data_destination
+        self.batch_data_destination = os.path.join(batch_path, config.connection.folder_path)
+        config.connection.folder_path = self.batch_data_destination
 
-        self.connect_to = self.connection_details['service']
+        self.connect_to = self.connection_details.service
 
         # Validate service type, create event handler and connect
         if self.connect_to not in self.EVENT_HANDLER_LOOKUP:

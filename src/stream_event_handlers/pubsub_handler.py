@@ -63,9 +63,9 @@ class PubSubEventHandler(BaseEventHandler):
         """
         super().__init__()
         self.name = config.name
-        self.project_id = config.connection['project_id']
-        self.topic_id = config.connection['topic_id']
-        self.credentials_path = config.connection['credentials_path']
+        self.project_id = config.connection.project_id
+        self.topic_id = config.connection.topic_id
+        self.credentials_path = config.connection.credentials_path
         self.publisher = None
         self.topic_path = None
               
