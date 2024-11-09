@@ -156,7 +156,7 @@ Each dictionary in this list corresponds to a generated data field (or a column 
     "allowable_values": [                       // Specifies range as [start_date, end_date]
       "2024-01-01",
       "2024-12-31"
-      ], 
+      ],
     "proportion_nulls": 0                       // Probability of null values (0 to 1)
   },
   {
@@ -164,7 +164,8 @@ Each dictionary in this list corresponds to a generated data field (or a column 
     "data_type": "datetime",                    // Specifies a datetime data type
     "allowable_values": [                       // Range as [start_datetime, end_datetime]
       "2024-01-01 00:00:00", 
-      "2024-12-31 00:00:00"], 
+      "2024-12-31 00:00:00"
+      ], 
     "proportion_nulls": 0                       // Probability of null values (0 to 1)
   }
 ]
@@ -232,8 +233,7 @@ fake-out/
 │   │   └── local.py                # Local storage batch event handler
 │   ├── config/                     
 │   │   ├── __init__.py             
-│   │   ├── config.py               # Load and manage the JSON config
-│   │   └── schema_validator.py     # Validates config schema
+│   │   ├── config.py               # Loads, validates, and manages the json config file
 │   ├── data_generator/             
 │   │   ├── __init__.py             
 │   │   └── data_generator.py       # Logic for generating fake data
