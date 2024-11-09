@@ -48,10 +48,15 @@ class DataGenerator:
         """
         records = []
         count = 0
-        timestamp = self._generate_timestamp_data()
+        generated_at = datetime.now(pytz.utc).strftime(self.datetime_format_string)
+
         while self.keep_on_swimming and (num_records is None or count < num_records):
-            records.append(self._generate_fake_data(timestamp))
+            new_row = self._generate_fake_data(generated_at)
+            print(new_row)
+            records.append(new_row)
             count += 1
+
+        print(records)
         return records
 
     def stop(self) -> None:
@@ -60,7 +65,7 @@ class DataGenerator:
         """
         self.keep_on_swimming = False  # Method to set the flag to stop
 
-    def _generate_fake_data(self, base_data) -> Dict[str, Any]:
+    def _generate_fake_data(self, timestamp) -> Dict[str, Any]:
         """
         Generates a single data record with a timestamp and other fields defined 
         in the configuration.
@@ -68,54 +73,19 @@ class DataGenerator:
         Returns:
             Dict[str, Any]: A dictionary containing generated data fields and a timestamp.
         """
+        base_data = {"generated_at" : timestamp}
         for datapoint in self.data_description:
             try:
                 data_type = datapoint['data_type']
-                name = datapoint['name']
-                allowable_values = datapoint['allowable_values']
                 generating_fn = self.datatype_lookup[data_type]
-                base_data.update(generating_fn(name, allowable_values))
+                output = generating_fn(datapoint)
+                base_data.update(output)
             except Exception as e:
-                print(f"Error generating data for {name}: {e}")
+                print(f"Error generating data for {datapoint['name']}: {e}")
                 continue  # Skip this data poin
-                              
+
         return base_data
-
-    def _generate_timestamp_data(self) -> str:
-        """
-        Generates the current UTC datetime string in the configured format.
-
-        Returns:
-            Dict[str, str]: A dictionary with the current datetime as a formatted string.
-        """
-        now = datetime.now(pytz.utc)
-        return {'datetime': now.strftime(self.datetime_format_string)}
     
-    def _generate_categorical_data(self, field_config):
-        return choice(field_config['allowable_values'])
-
-    def _generate_float_data(self, field_config):
-        min_val, max_val = field_config['allowable_values']
-        return round(uniform(min_val, max_val), 2) if not field_config['allow_nulls'] else None
-
-    def _generate_integer_data(self, field_config):
-        min_val, max_val = field_config['allowable_values']
-        return randint(min_val, max_val) if not field_config['allow_nulls'] else None
-
-    def _generate_boolean_data(self, field_config):
-        return choice([True, False]) if not field_config['allow_nulls'] else None
-
-    def _generate_date_data(self, field_config):
-        start_date = datetime.strptime(field_config['allowable_values'][0], '%Y-%m-%d')
-        end_date = datetime.strptime(field_config['allowable_values'][1], '%Y-%m-%d')
-        delta_days = (end_date - start_date).days
-        return (start_date + timedelta(days=randint(0, delta_days))).date() if not field_config['allow_nulls'] else None
-
-    def _generate_datetime_data(self, field_config):
-        start_datetime = datetime.strptime(field_config['allowable_values'][0], '%Y-%m-%d %H:%M:%S')
-        end_datetime = datetime.strptime(field_config['allowable_values'][1], '%Y-%m-%d %H:%M:%S')
-        delta_seconds = int((end_datetime - start_datetime).total_seconds())
-        return start_datetime + timedelta(seconds=randint(0, delta_seconds)) if not field_config['allow_nulls'] else None
     
     def _generate_categorical_data(self, field_config: Dict) -> Dict:
         """
@@ -130,6 +100,23 @@ class DataGenerator:
         if random.random() < field_config.get("proportion_nulls", 0):
             return {field_config["name"]: None}
         return {field_config["name"]: random.choice(field_config["allowable_values"])}
+    
+
+    def _generate_float_data(self, field_config: Dict) -> Dict:
+        """
+        Generates a numeric data field within the specified range, with optional nulls.
+
+        Args:
+            field_config (Dict): Configuration dictionary for the field.
+
+        Returns:
+            Dict: A dictionary containing the generated numeric data or None.
+        """
+        if random.random() < field_config.get("proportion_nulls", 0):
+            return {field_config["name"]: None}
+        data_range = field_config["allowable_values"]
+        return {field_config["name"]: random.uniform(data_range[0], data_range[1])}
+    
     
     def _generate_integer_data(self, field_config: Dict) -> Dict:
         """
@@ -146,6 +133,7 @@ class DataGenerator:
         data_range = field_config["allowable_values"]
         return {field_config["name"]: random.randint(data_range[0], data_range[1])}
     
+
     def _generate_boolean_data(self, field_config: Dict) -> Dict:
         """
         Generates a boolean data field with optional nulls.
@@ -159,6 +147,7 @@ class DataGenerator:
         if random.random() < field_config.get("proportion_nulls", 0):
             return {field_config["name"]: None}
         return {field_config["name"]: random.choice([True, False])}
+    
     
     def _generate_date_data(self, field_config: Dict) -> Dict:
         """
@@ -178,6 +167,7 @@ class DataGenerator:
         end_date = datetime.strptime(field_config["allowable_values"][1], "%Y-%m-%d")
         random_date = start_date + timedelta(days=random.randint(0, (end_date - start_date).days))
         return {field_config["name"]: random_date.strftime("%Y-%m-%d")}
+    
     
     def _generate_datetime_data(self, field_config: Dict) -> Dict:
         """
