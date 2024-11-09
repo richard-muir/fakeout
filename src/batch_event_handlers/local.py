@@ -59,8 +59,8 @@ class LocalStorageConnection(BaseBatchConnection):
         """
         super().__init__()
         self.name = config.name
-        self.port = config.connection['port']
-        self.folder_path = config.connection['folder_path']
+        self.port = config.connection.port
+        self.folder_path = config.connection.folder_path
         self.datetime_format_string = config.datetime_format_string
 
         

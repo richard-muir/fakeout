@@ -47,7 +47,7 @@ class StreamingService:
 
         self.data_generator = DataGenerator(self.data_description, config.datetime_format_string)
 
-        self.connect_to = self.connection_details['service']
+        self.connect_to = self.connection_details.service
 
         # Validate service type, create event handler and connect
         if self.connect_to not in self.EVENT_HANDLER_LOOKUP:

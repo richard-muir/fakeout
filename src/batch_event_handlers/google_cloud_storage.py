@@ -71,10 +71,10 @@ class GoogleCloudStorageConnection(BaseBatchConnection):
         """
         super().__init__()
         self.name = config.name
-        self.project_id = config.connection['project_id']
-        self.bucket_name = config.connection['bucket_name']
-        self.folder_path = config.connection['folder_path']
-        self.credentials_path = config.connection['credentials_path']
+        self.project_id = config.connection.project_id
+        self.bucket_name = config.connection.bucket_name
+        self.folder_path = config.connection.folder_path
+        self.credentials_path = config.connection.credentials_path
         self.client = None  # Will hold the GCS client instance
 
         
