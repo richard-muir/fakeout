@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     # Load configuration
     # Use this line if running from the command line with different config args
-    config = Config(args.config)  # Assuming this reads your config.json
+    config = Config.from_json(args.config)  # Assuming this reads your config.json
     # config = Config()
 
     # Create the Worker with all services
