@@ -47,8 +47,7 @@
           "data_type": "datetime",
           "allowable_values": ["2024-01-01 00:00:00", "2024-12-31 00:00:00"],
           "proportion_nulls" : 0
-          "allowable_values": ["sensor_1", "sensor_2", "sensor_3"]
-        },
+        }
       ] 
     },
     {
