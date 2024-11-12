@@ -226,14 +226,10 @@ class Config(BaseModel):
     batch_configs: List[BatchConfig] = Field(max_items=5)
 
     @classmethod
-    def from_json(cls, file_path: str = 'config.json') -> "Config":
+    def from_dict(cls, config_data: dict) -> "Config":
         """
-        Class method to create an instance from a JSON file.
+        Class method to create an instance from a dictionary.
         """
-        config_file_path = os.path.join(os.path.dirname(__file__), '..', '..', file_path)
-        with open(config_file_path, 'r') as file:
-            config_data = json.load(file)
-    
         # Validate and transform data
         streaming_configs = [
             StreamingConfig(**stream)
@@ -250,3 +246,14 @@ class Config(BaseModel):
             streaming_configs=streaming_configs,
             batch_configs=batch_configs
         )
+
+    @classmethod
+    def from_json(cls, file_path: str = 'config.json') -> "Config":
+        """
+        Class method to create an instance from a JSON file.
+        """
+        config_file_path = os.path.join(os.path.dirname(__file__), '..', '..', file_path)
+        with open(config_file_path, 'r') as file:
+            config_data = json.load(file)
+    
+        return cls.from_dict(config_data)

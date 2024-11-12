@@ -29,6 +29,10 @@ class DataGenerator:
         self.data_description = data_description
         self.datetime_format_string = datetime_format_string
         self.keep_on_swimming = True
+
+        # Add new data types and their associated methods here
+        #  Don't for get to update src\tests\data_fields.py to include them 
+        #  in the testing suite
         self.datatype_lookup = {
             'category': self._generate_categorical_data,
             'float': self._generate_float_data,

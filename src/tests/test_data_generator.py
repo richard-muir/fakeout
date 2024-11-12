@@ -1,8 +1,9 @@
 import unittest
 from datetime import datetime
-from unittest.mock import MagicMock
 from data_generator import DataGenerator
-from config import DataDescription
+from config.config import DataDescription
+
+import data_fields as df
 
 
 class TestDataGenerator(unittest.TestCase):
@@ -18,31 +19,8 @@ class TestDataGenerator(unittest.TestCase):
             {"name": "bool_field", "data_type": "bool", "proportion_nulls": 0}
         ]
         self.data_description = DataDescription(self.data_description)
-        print(self.data_description[0])
         self.datetime_format = "%Y-%m-%d %H:%M:%S"
         self.generator = DataGenerator(self.data_description, self.datetime_format)
-
-
-        # Add new data types here
-        self.allowable_values_mapping = {
-            'category' : ['A', 'B', 'C'],
-            'integer' : [1, 100],
-            'float' : [0, 1],
-            'bool' : [],
-            'date' : ["2023-01-01", "2023-12-31"],
-            'datetime' : ["2023-01-01 00:00:00", "2023-12-31 23:59:59"]
-        }
-
-        # and here
-        self.datatype_fn_mapping = [
-            ("category", self.generator._generate_categorical_data),
-            ("integer", self.generator._generate_integer_data),
-            ("float", self.generator._generate_float_data),
-            ("bool", self.generator._generate_boolean_data),
-            ("date", self.generator._generate_date_data),
-            ("datetime", self.generator._generate_datetime_data),
-        ]
-            
 
     def test_initialization(self):
         self.assertEqual(self.generator.data_description, self.data_description)
@@ -66,7 +44,8 @@ class TestDataGenerator(unittest.TestCase):
         end_date = datetime.strptime(field_config.allowable_values[1], "%Y-%m-%d")
 
         for _ in range(10):
-            data = self.generator._generate_date_data(field_config)
+            fn = self.generator.datatype_lookup["date"]
+            data = fn(field_config)
             value = data[field_config.name]
             if value is not None:
                 generated_date = datetime.strptime(value, "%Y-%m-%d")
@@ -81,7 +60,8 @@ class TestDataGenerator(unittest.TestCase):
         end_datetime = datetime.strptime(field_config.allowable_values[1], "%Y-%m-%d %H:%M:%S")
 
         for _ in range(10):
-            data = self.generator._generate_datetime_data(field_config)
+            fn = self.generator.datatype_lookup["datetime"]
+            data = fn(field_config)
             value = data[field_config.name]
             if value is not None:
                 generated_datetime = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
@@ -95,7 +75,8 @@ class TestDataGenerator(unittest.TestCase):
         allowable_values = field_config.allowable_values
 
         for _ in range(10):
-            data = self.generator._generate_categorical_data(field_config)
+            fn = self.generator.datatype_lookup["category"]
+            data = fn(field_config)
             value = data[field_config.name]
             if value is not None:
                 self.assertIn(value, allowable_values)
@@ -107,7 +88,8 @@ class TestDataGenerator(unittest.TestCase):
         min_value, max_value = field_config.allowable_values
 
         for _ in range(10):
-            data = self.generator._generate_integer_data(field_config)
+            fn = self.generator.datatype_lookup["integer"]
+            data = fn(field_config)
             value = data[field_config.name]
             if value is not None:
                 self.assertGreaterEqual(value, min_value)
@@ -121,7 +103,8 @@ class TestDataGenerator(unittest.TestCase):
         min_value, max_value = field_config.allowable_values
 
         for _ in range(10):
-            data = self.generator._generate_float_data(field_config)
+            fn = self.generator.datatype_lookup["float"]
+            data = fn(field_config)
             value = data[field_config.name]
             if value is not None:
                 self.assertGreaterEqual(value, min_value)
@@ -134,7 +117,8 @@ class TestDataGenerator(unittest.TestCase):
         field_config = next(field for field in self.generator.data_description if field.data_type == "bool")
 
         for _ in range(10):
-            data = self.generator._generate_boolean_data(field_config)
+            fn = self.generator.datatype_lookup["bool"]
+            data = fn(field_config)
             value = data[field_config.name]
             if value is not None:
                 self.assertIn(value, [True, False])
@@ -144,14 +128,13 @@ class TestDataGenerator(unittest.TestCase):
 
     def test_no_null_values(self):
         # Test with proportion_nulls set to 0
-        for data_type, generate_fn in self.datatype_fn_mapping:
+        for data_type, generate_fn in self.generator.datatype_lookup.items():
             field_config = DataDescription([{
                 "name": f"test_{data_type}",
                 "data_type": data_type,
                 "proportion_nulls": 0,
-                "allowable_values": self.allowable_values_mapping[data_type]
+                "allowable_values": df.ALLOWABLE_VALUES_MAPPING[data_type]
             }])
-            # Run 100 records to verify that all values are non-null
             for _ in range(100):
                 data = generate_fn(field_config[0])
                 value = data[field_config[0].name]
@@ -159,12 +142,12 @@ class TestDataGenerator(unittest.TestCase):
 
     def test_all_null_values(self):
         # Test with proportion_nulls set to 1
-        for data_type, generate_fn in self.datatype_fn_mapping:
+        for data_type, generate_fn in self.generator.datatype_lookup.items():
             field_config = DataDescription([{
                 "name": f"test_{data_type}",
                 "data_type": data_type,
                 "proportion_nulls": 1,
-                "allowable_values": self.allowable_values_mapping[data_type]
+                "allowable_values": df.ALLOWABLE_VALUES_MAPPING[data_type]
             }])
             # Run 100 records to verify that all values are null
             for _ in range(100):
@@ -174,15 +157,15 @@ class TestDataGenerator(unittest.TestCase):
 
     def test_half_null_values(self):
         # Test with proportion_nulls set to 0.5
-        null_counts = {data_type: 0 for data_type in ["category", "integer", "float", "bool", "date", "datetime"]}
+        null_counts = {data_type: 0 for data_type in df.DATA_TYPES}
         total_records = 10000
 
-        for data_type, generate_fn in self.datatype_fn_mapping:
+        for data_type, generate_fn in self.generator.datatype_lookup.items():
             field_config = DataDescription([{
                 "name": f"test_{data_type}",
                 "data_type": data_type,
                 "proportion_nulls": 0.5,
-                "allowable_values": self.allowable_values_mapping[data_type]
+                "allowable_values": df.ALLOWABLE_VALUES_MAPPING[data_type]
             }])
             for _ in range(total_records):
                 data = generate_fn(field_config[0])

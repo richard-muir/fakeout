@@ -3,6 +3,8 @@ import os
 import json
 from config import Config
 
+from data_fields import *
+
 class TestConfig(unittest.TestCase):
 
     @classmethod
@@ -69,7 +71,7 @@ class TestConfig(unittest.TestCase):
                     ]
                 }
             ]      
-            }
+        }
         with open(cls.test_config_path, 'w') as f:
             json.dump(test_config, f)
 
@@ -82,10 +84,86 @@ class TestConfig(unittest.TestCase):
     def test_load_config(self):
         """Test if the configuration loads correctly."""
         config = Config.from_json(self.test_config_path)
-        self.assertEqual(config.streaming_configs[0].interval, 10)
-        self.assertEqual(config.batch_configs[0].name, "batch")
-        self.assertEqual(config.batch_configs[0].interval, 30)
+        
+        # Test general properties of the config
+        self.assertEqual(config.version, "2.0")
+        self.assertEqual(len(config.streaming_configs), 1)  # Only 1 streaming config in the test data
+        self.assertEqual(len(config.batch_configs), 1)  # Only 1 batch config in the test data
+        
+        # Test specific streaming configuration values
+        streaming_config = config.streaming_configs[0]
+        self.assertEqual(streaming_config.name, "streaming")
+        self.assertEqual(streaming_config.interval, 10)
+        self.assertEqual(streaming_config.size, 3)
+        self.assertFalse(streaming_config.randomise)
+        
+        # Test streaming connection details
+        connection = streaming_config.connection
+        self.assertEqual(connection.service, "pubsub")
+        self.assertEqual(connection.project_id, "fakeout-440306")
+        self.assertEqual(connection.topic_id, "feakeout-receive-2")
+        self.assertEqual(connection.credentials_path, "GOOGLE_APPLICATION_CREDENTIALS.json")
+        
+        # Test data description for streaming
+        data_description = streaming_config.data_description
+        self.assertEqual(len(data_description), 3)
+        
+        # Validate individual data fields in the streaming config
+        machine_id_field = data_description[0]
+        self.assertEqual(machine_id_field.name, "machine_id")
+        self.assertEqual(machine_id_field.data_type, "category")
+        self.assertEqual(len(machine_id_field.allowable_values), 3)
+        
+        value_1_field = data_description[1]
+        self.assertEqual(value_1_field.name, "value_1")
+        self.assertEqual(value_1_field.data_type, "float")
+        self.assertEqual(len(value_1_field.allowable_values), 2)
+        
+        value_2_field = data_description[2]
+        self.assertEqual(value_2_field.name, "value_2")
+        self.assertEqual(value_2_field.data_type, "integer")
+        self.assertEqual(len(value_2_field.allowable_values), 2)
+        
+        # Test specific batch configuration values
+        batch_config = config.batch_configs[0]
+        self.assertEqual(batch_config.name, "batch")
+        self.assertEqual(batch_config.interval, 30)
+        self.assertEqual(batch_config.size, 1000)
+        self.assertEqual(batch_config.filetype, "json")
+        self.assertFalse(batch_config.randomise)
+        
+        # Test batch connection details
+        batch_connection = batch_config.connection
+        self.assertEqual(batch_connection.service, "local")
+        self.assertEqual(batch_connection.port, "8080")
+        self.assertEqual(batch_connection.folder_path, "your-folder-path")
+        
+        # Test data description for batch
+        batch_data_description = batch_config.data_description
+        self.assertEqual(len(batch_data_description), 2)
+        
+        # Validate individual data fields in the batch config
+        sensor_id_field = batch_data_description[0]
+        self.assertEqual(sensor_id_field.name, "sensor_id")
+        self.assertEqual(sensor_id_field.data_type, "category")
+        self.assertEqual(len(sensor_id_field.allowable_values), 3)
+        
+        value_field = batch_data_description[1]
+        self.assertEqual(value_field.name, "value")
+        self.assertEqual(value_field.data_type, "float")
+        self.assertEqual(len(value_field.allowable_values), 2)
+
+        # Test the overall length of the config's root fields
         self.assertEqual(len(config.streaming_configs[0].data_description), 3)
+        self.assertEqual(len(config.batch_configs[0].data_description), 2)
+
+        # Test the data_description field of each config for type consistency (e.g., DataField)
+        for field in config.streaming_configs[0].data_description:
+            self.assertTrue(isinstance(field, DATA_FIELD_TYPES))  # Ensure fields are instances of DataField classes (e.g., CategoryField, IntegerField, etc.)
+        
+        for field in config.batch_configs[0].data_description:
+            self.assertTrue(isinstance(field, DATA_FIELD_TYPES))  # Same check for batch config data fields
+
 
     def test_missing_file(self):
         """Test if FileNotFoundError is raised for a missing config file."""

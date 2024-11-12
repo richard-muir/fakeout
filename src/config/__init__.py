@@ -1,1 +1,1 @@
-from .config import Config, DataDescription
+from .config import Config
