@@ -26,4 +26,5 @@ jobs:
 
       - name: Run tests
         run: |
-          python -m unittest discover src/tests
+          cd src
+          python -m unittest discover tests
