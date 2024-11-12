@@ -1,6 +1,9 @@
 # Ignore virtual environment folder
 venv/
 
+# Ignore public folder
+public/
+
 # Ignore all files in creds folder
 _creds/*.json
 

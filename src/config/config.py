@@ -3,7 +3,7 @@ import json
 from typing import List, Optional, Literal, Any, Union
 from typing_extensions import Annotated
 
-from pydantic import BaseModel, Field, model_validator, field_validator
+from pydantic import BaseModel, Field, model_validator, field_validator, RootModel
 
 
 # TODO: # Add these later
@@ -19,6 +19,7 @@ def validate_values_different(allowable_values):
     
 
 class BaseDataField(BaseModel):
+    name: str = Field(...)
     proportion_nulls: float = Field(default=0,
                                     description="Likelihood of a single record having null for this value",
                                     ge=0,
@@ -33,7 +34,6 @@ class BaseDataField(BaseModel):
     
 
 class CategoryField(BaseDataField):
-    name: str
     data_type: Literal['category']
     allowable_values: List[str] = Field(..., 
                                         description="Allowed values for the category field.",
@@ -43,7 +43,6 @@ class CategoryField(BaseDataField):
 
 
 class IntegerField(BaseDataField):
-    name: str
     data_type: Literal['integer']
     allowable_values: List[int] = Field(..., 
                                         description="Min and max values defining the range of allowable values in the colums",
@@ -54,7 +53,6 @@ class IntegerField(BaseDataField):
         
         
 class FloatField(BaseDataField):
-    name: str
     data_type: Literal['float']
     allowable_values: List[float] = Field(..., 
                                         description="Min and max values defining the range of allowable values in the colums",
@@ -65,13 +63,11 @@ class FloatField(BaseDataField):
         
 
 class BoolField(BaseDataField):
-    name: str
     data_type: Literal['bool']
 
         
 
 class DateField(BaseDataField):
-    name: str
     data_type: Literal['date']
     allowable_values: List[str] = Field(..., 
                                         description="Min and max values defining the range of allowable values in the colums",
@@ -82,7 +78,6 @@ class DateField(BaseDataField):
         
 
 class DateTimeField(BaseDataField):
-    name: str
     data_type: Literal['datetime']
     allowable_values: List[str] = Field(..., 
                                         description="Min and max values defining the range of allowable values in the colums",
@@ -92,8 +87,6 @@ class DateTimeField(BaseDataField):
     validate_fields = field_validator("allowable_values")(validate_values_different)
     
         
-    
-
 
 # DataField needs to be defined like this in order to validate each of the possible types
 #  in a list. 
@@ -109,26 +102,37 @@ DataField = Annotated[
     ],
     Field(discriminator="data_type")]
 
+class DataDescription(RootModel):
+    root: List[DataField] = Field(..., max_items=99, min_items=1)
+    def __iter__(self):
+        return iter(self.root)
+
+    def __getitem__(self, item):
+        return self.root[item]
+    
+    def __len__(self):
+        return len(self.root)
+
 
 class BatchConnectionCredsGCP(BaseModel):
     service: Literal['google_cloud_storage']
-    project_id: str
-    bucket_name: str
-    folder_path: str
-    credentials_path: str
+    project_id: str = Field(...)
+    bucket_name: str = Field(...)
+    folder_path: str = ''
+    credentials_path: str = Field(...)
 
 
 class BatchLocalCreds(BaseModel):
     service: Literal['local']
-    port: str
-    folder_path: str
+    port: str = Field(...)
+    folder_path: str = ''
 
 
 class StreamingConnectionCredsPubSub(BaseModel):
     service: Literal['pubsub']
-    project_id: str
-    topic_id: str
-    credentials_path: str
+    project_id: str = Field(...)
+    topic_id: str = Field(...)
+    credentials_path: str = Field(...)
 
 
 class StreamingConfig(BaseModel):
@@ -160,7 +164,7 @@ class StreamingConfig(BaseModel):
     connection: Union[
         StreamingConnectionCredsPubSub
         ] = Field(..., discriminator='service')
-    data_description: List[DataField] = Field(..., max_items=99, min_items=1)
+    data_description: DataDescription
 
 
 class BatchConfig(BaseModel):
@@ -203,26 +207,22 @@ class BatchConfig(BaseModel):
         BatchLocalCreds,
         BatchConnectionCredsGCP
         ] = Field(..., discriminator='service')
-    data_description: List[DataField] = Field(..., max_items=99, min_items=1)
+    data_description: DataDescription
 
 
 class Config(BaseModel):
     """
     Main configuration class for FakeOut, handling multiple streaming and batch configurations.
     """
-    version: str
+    version: str = Field()
     streaming_configs: List[StreamingConfig] = Field(max_items=5)
     batch_configs: List[BatchConfig] = Field(max_items=5)
 
     @classmethod
-    def from_json(cls, file_path: str = 'config.json') -> "Config":
+    def from_dict(cls, config_data: dict) -> "Config":
         """
-        Class method to create an instance from a JSON file.
+        Class method to create an instance from a dictionary.
         """
-        config_file_path = os.path.join(os.path.dirname(__file__), '..', '..', file_path)
-        with open(config_file_path, 'r') as file:
-            config_data = json.load(file)
-    
         # Validate and transform data
         streaming_configs = [
             StreamingConfig(**stream)
@@ -235,7 +235,18 @@ class Config(BaseModel):
 
         # Initialize ConfigValidator with transformed data
         return cls(
-            version=config_data.get("version", "1.0"),
+            version=config_data.get('version', None),
             streaming_configs=streaming_configs,
             batch_configs=batch_configs
         )
+
+    @classmethod
+    def from_json(cls, file_path: str = 'config.json') -> "Config":
+        """
+        Class method to create an instance from a JSON file.
+        """
+        config_file_path = os.path.join(os.path.dirname(__file__), '..', '..', file_path)
+        with open(config_file_path, 'r') as file:
+            config_data = json.load(file)
+    
+        return cls.from_dict(config_data)
