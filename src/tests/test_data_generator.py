@@ -175,7 +175,7 @@ class TestDataGenerator(unittest.TestCase):
     def test_half_null_values(self):
         # Test with proportion_nulls set to 0.5
         null_counts = {data_type: 0 for data_type in ["category", "integer", "float", "bool", "date", "datetime"]}
-        total_records = 1000
+        total_records = 10000
 
         for data_type, generate_fn in self.datatype_fn_mapping:
             field_config = DataDescription([{
