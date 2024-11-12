@@ -1,6 +1,8 @@
 import unittest
 import os
 import json
+from pydantic import ValidationError
+
 from config import Config
 
 from data_fields import *
@@ -11,7 +13,7 @@ class TestConfig(unittest.TestCase):
     def setUpClass(cls):
         """Create a temporary configuration file for testing."""
         cls.test_config_path = os.path.join(os.path.dirname(__file__), 'test_config.json')
-        test_config = { 
+        cls.test_config = { 
             "version": "2.0",
             "streaming" : [
                 {
@@ -73,7 +75,7 @@ class TestConfig(unittest.TestCase):
             ]      
         }
         with open(cls.test_config_path, 'w') as f:
-            json.dump(test_config, f)
+            json.dump(cls.test_config, f)
 
     @classmethod
     def tearDownClass(cls):
@@ -81,7 +83,11 @@ class TestConfig(unittest.TestCase):
         if os.path.isfile(cls.test_config_path):
             os.remove(cls.test_config_path)
 
-    def test_load_config(self):
+    def test_load_config_from_dict(self):
+        config = Config.from_dict(self.test_config)
+        self.assertIsInstance(config, Config)
+
+    def test_load_config_from_json(self):
         """Test if the configuration loads correctly."""
         config = Config.from_json(self.test_config_path)
         
@@ -181,6 +187,18 @@ class TestConfig(unittest.TestCase):
         
         # Cleanup
         os.remove(invalid_config_path)
+
+    def test_config_with_all_required_keys(self):
+        # This test should pass without any exceptions
+        config = Config.from_dict(self.test_config)
+        assert config.version == "2.0"
+
+    def test_missing_version(self):
+        config_data = self.test_config.copy()
+        del config_data["version"]  # Remove the 'version' key
+        with self.assertRaises(KeyError) as context:
+            Config.from_dict(config_data)
+        self.assertIn("version", str(context.exception))
 
 if __name__ == '__main__':
     unittest.main()

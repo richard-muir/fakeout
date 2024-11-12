@@ -221,7 +221,7 @@ class Config(BaseModel):
     """
     Main configuration class for FakeOut, handling multiple streaming and batch configurations.
     """
-    version: str
+    version: str = Field()
     streaming_configs: List[StreamingConfig] = Field(max_items=5)
     batch_configs: List[BatchConfig] = Field(max_items=5)
 
@@ -242,7 +242,7 @@ class Config(BaseModel):
 
         # Initialize ConfigValidator with transformed data
         return cls(
-            version=config_data.get("version", "1.0"),
+            version=config_data['version'],
             streaming_configs=streaming_configs,
             batch_configs=batch_configs
         )
