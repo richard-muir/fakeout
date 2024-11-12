@@ -19,6 +19,7 @@ def validate_values_different(allowable_values):
     
 
 class BaseDataField(BaseModel):
+    name: str = Field(...)
     proportion_nulls: float = Field(default=0,
                                     description="Likelihood of a single record having null for this value",
                                     ge=0,
@@ -33,7 +34,6 @@ class BaseDataField(BaseModel):
     
 
 class CategoryField(BaseDataField):
-    name: str
     data_type: Literal['category']
     allowable_values: List[str] = Field(..., 
                                         description="Allowed values for the category field.",
@@ -43,7 +43,6 @@ class CategoryField(BaseDataField):
 
 
 class IntegerField(BaseDataField):
-    name: str
     data_type: Literal['integer']
     allowable_values: List[int] = Field(..., 
                                         description="Min and max values defining the range of allowable values in the colums",
@@ -54,7 +53,6 @@ class IntegerField(BaseDataField):
         
         
 class FloatField(BaseDataField):
-    name: str
     data_type: Literal['float']
     allowable_values: List[float] = Field(..., 
                                         description="Min and max values defining the range of allowable values in the colums",
@@ -65,13 +63,11 @@ class FloatField(BaseDataField):
         
 
 class BoolField(BaseDataField):
-    name: str
     data_type: Literal['bool']
 
         
 
 class DateField(BaseDataField):
-    name: str
     data_type: Literal['date']
     allowable_values: List[str] = Field(..., 
                                         description="Min and max values defining the range of allowable values in the colums",
@@ -82,7 +78,6 @@ class DateField(BaseDataField):
         
 
 class DateTimeField(BaseDataField):
-    name: str
     data_type: Literal['datetime']
     allowable_values: List[str] = Field(..., 
                                         description="Min and max values defining the range of allowable values in the colums",
@@ -92,8 +87,6 @@ class DateTimeField(BaseDataField):
     validate_fields = field_validator("allowable_values")(validate_values_different)
     
         
-    
-
 
 # DataField needs to be defined like this in order to validate each of the possible types
 #  in a list. 
@@ -242,7 +235,7 @@ class Config(BaseModel):
 
         # Initialize ConfigValidator with transformed data
         return cls(
-            version=config_data['version'],
+            version=config_data.get('version', None),
             streaming_configs=streaming_configs,
             batch_configs=batch_configs
         )
