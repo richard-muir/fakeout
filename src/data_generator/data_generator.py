@@ -78,6 +78,7 @@ class DataGenerator:
                 output = generating_fn(datapoint)
                 base_data.update(output)
             except Exception as e:
+                print(datapoint)
                 print(f"Error generating data for {datapoint.name}: {e}")
                 continue  # Skip this data poin
 
