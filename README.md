@@ -213,10 +213,10 @@ docker-compose down
 
 ### Running Tests
 
-To run the unit tests, use the following command:
+To run the unit tests, use the following command from the src/ directory:
 
 ```bash
-pytest
+python -m unittest discover tests
 ```
 
 
@@ -244,7 +244,11 @@ fake-out/
 │   ├── tests/                      
 │   │   ├── __init__.py             
 │   │   ├── test_config.py          # Tests for the config process   
-│   │   ├── test_data_generator.py  # Tests for the data generator
+│   │   └── test_data_generator.py  # Tests for the data generator
+│   ├── .github/                      
+│   │       └── workflows/             
+│   │           └── run_unit_tests.yml # GitHub Action to run unit tests
+│   │
 │   ├── batch_service.py            # Controller for the various batch services
 │   ├── streaming_service.py        # Controller for the various streaming services
 │   ├── worker.py                   # Coordinates the data generator, streaming service, and batch service
