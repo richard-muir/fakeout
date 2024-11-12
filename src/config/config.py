@@ -3,7 +3,7 @@ import json
 from typing import List, Optional, Literal, Any, Union
 from typing_extensions import Annotated
 
-from pydantic import BaseModel, Field, model_validator, field_validator
+from pydantic import BaseModel, Field, model_validator, field_validator, RootModel
 
 
 # TODO: # Add these later
@@ -109,6 +109,14 @@ DataField = Annotated[
     ],
     Field(discriminator="data_type")]
 
+class DataDescription(RootModel):
+    root: List[DataField] = Field(..., max_items=99, min_items=1)
+    def __iter__(self):
+        return iter(self.root)
+
+    def __getitem__(self, item):
+        return self.root[item]
+
 
 class BatchConnectionCredsGCP(BaseModel):
     service: Literal['google_cloud_storage']
@@ -160,7 +168,7 @@ class StreamingConfig(BaseModel):
     connection: Union[
         StreamingConnectionCredsPubSub
         ] = Field(..., discriminator='service')
-    data_description: List[DataField] = Field(..., max_items=99, min_items=1)
+    data_description: DataDescription
 
 
 class BatchConfig(BaseModel):
@@ -203,7 +211,7 @@ class BatchConfig(BaseModel):
         BatchLocalCreds,
         BatchConnectionCredsGCP
         ] = Field(..., discriminator='service')
-    data_description: List[DataField] = Field(..., max_items=99, min_items=1)
+    data_description: DataDescription
 
 
 class Config(BaseModel):
