@@ -116,6 +116,9 @@ class DataDescription(RootModel):
 
     def __getitem__(self, item):
         return self.root[item]
+    
+    def __len__(self):
+        return len(self.root)
 
 
 class BatchConnectionCredsGCP(BaseModel):
