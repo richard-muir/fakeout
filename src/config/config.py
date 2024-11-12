@@ -116,23 +116,23 @@ class DataDescription(RootModel):
 
 class BatchConnectionCredsGCP(BaseModel):
     service: Literal['google_cloud_storage']
-    project_id: str
-    bucket_name: str
-    folder_path: str
-    credentials_path: str
+    project_id: str = Field(...)
+    bucket_name: str = Field(...)
+    folder_path: str = ''
+    credentials_path: str = Field(...)
 
 
 class BatchLocalCreds(BaseModel):
     service: Literal['local']
-    port: str
-    folder_path: str
+    port: str = Field(...)
+    folder_path: str = ''
 
 
 class StreamingConnectionCredsPubSub(BaseModel):
     service: Literal['pubsub']
-    project_id: str
-    topic_id: str
-    credentials_path: str
+    project_id: str = Field(...)
+    topic_id: str = Field(...)
+    credentials_path: str = Field(...)
 
 
 class StreamingConfig(BaseModel):

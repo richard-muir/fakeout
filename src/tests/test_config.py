@@ -115,137 +115,137 @@ TEST_CONFIG_DICT = {
     ]      
 }
 
-# class TestConfig(unittest.TestCase):
+class TestConfig(unittest.TestCase):
 
-#     @classmethod
-#     def setUpClass(cls):
-#         """Create a temporary configuration file for testing."""
-#         cls.test_config_path = os.path.join(os.path.dirname(__file__), 'test_config.json')
-#         with open(cls.test_config_path, 'w') as f:
-#             json.dump(TEST_CONFIG_DICT, f)
+    @classmethod
+    def setUpClass(cls):
+        """Create a temporary configuration file for testing."""
+        cls.test_config_path = os.path.join(os.path.dirname(__file__), 'test_config.json')
+        with open(cls.test_config_path, 'w') as f:
+            json.dump(TEST_CONFIG_DICT, f)
 
-#     @classmethod
-#     def tearDownClass(cls):
-#         """Remove the temporary configuration file after tests."""
-#         if os.path.isfile(cls.test_config_path):
-#             os.remove(cls.test_config_path)
+    @classmethod
+    def tearDownClass(cls):
+        """Remove the temporary configuration file after tests."""
+        if os.path.isfile(cls.test_config_path):
+            os.remove(cls.test_config_path)
 
-#     def test_load_config_from_dict(self):
-#         config = Config.from_dict(TEST_CONFIG_DICT)
-#         self.assertIsInstance(config, Config)
+    def test_load_config_from_dict(self):
+        config = Config.from_dict(TEST_CONFIG_DICT)
+        self.assertIsInstance(config, Config)
 
-#     def test_load_config_from_json(self):
-#         """Test if the configuration loads correctly."""
-#         config = Config.from_json(self.test_config_path)
+    def test_load_config_from_json(self):
+        """Test if the configuration loads correctly."""
+        config = Config.from_json(self.test_config_path)
         
-#         # Test general properties of the config
-#         self.assertEqual(config.version, "2.0")
-#         self.assertEqual(len(config.streaming_configs), 1)  # Only 1 streaming config in the test data
-#         self.assertEqual(len(config.batch_configs), 1)  # Only 1 batch config in the test data
+        # Test general properties of the config
+        self.assertEqual(config.version, "2.0")
+        self.assertEqual(len(config.streaming_configs), 1)  # Only 1 streaming config in the test data
+        self.assertEqual(len(config.batch_configs), 2)  # 2 batch configs in the test data
         
-#         # Test specific streaming configuration values
-#         streaming_config = config.streaming_configs[0]
-#         self.assertEqual(streaming_config.name, "streaming")
-#         self.assertEqual(streaming_config.interval, 10)
-#         self.assertEqual(streaming_config.size, 3)
-#         self.assertFalse(streaming_config.randomise)
+        # Test specific streaming configuration values
+        streaming_config = config.streaming_configs[0]
+        self.assertEqual(streaming_config.name, "streaming")
+        self.assertEqual(streaming_config.interval, 10)
+        self.assertEqual(streaming_config.size, 3)
+        self.assertFalse(streaming_config.randomise)
         
-#         # Test streaming connection details
-#         connection = streaming_config.connection
-#         self.assertEqual(connection.service, "pubsub")
-#         self.assertEqual(connection.project_id, "fakeout-440306")
-#         self.assertEqual(connection.topic_id, "feakeout-receive-2")
-#         self.assertEqual(connection.credentials_path, "GOOGLE_APPLICATION_CREDENTIALS.json")
+        # Test streaming connection details
+        connection = streaming_config.connection
+        self.assertEqual(connection.service, "pubsub")
+        self.assertEqual(connection.project_id, "fakeout-440306")
+        self.assertEqual(connection.topic_id, "feakeout-receive-2")
+        self.assertEqual(connection.credentials_path, "GOOGLE_APPLICATION_CREDENTIALS.json")
         
-#         # Test data description for streaming
-#         data_description = streaming_config.data_description
-#         self.assertEqual(len(data_description), 3)
+        # Test data description for streaming
+        data_description = streaming_config.data_description
+        self.assertEqual(len(data_description), 6)
         
-#         # Validate individual data fields in the streaming config
-#         machine_id_field = data_description[0]
-#         self.assertEqual(machine_id_field.name, "machine_id")
-#         self.assertEqual(machine_id_field.data_type, "category")
-#         self.assertEqual(len(machine_id_field.allowable_values), 3)
+        # Validate individual data fields in the streaming config
+        machine_id_field = data_description[0]
+        self.assertEqual(machine_id_field.name, "sensor_id")
+        self.assertEqual(machine_id_field.data_type, "category")
+        self.assertEqual(len(machine_id_field.allowable_values), 3)
         
-#         value_1_field = data_description[1]
-#         self.assertEqual(value_1_field.name, "value_1")
-#         self.assertEqual(value_1_field.data_type, "float")
-#         self.assertEqual(len(value_1_field.allowable_values), 2)
+        value_1_field = data_description[1]
+        self.assertEqual(value_1_field.name, "float_1")
+        self.assertEqual(value_1_field.data_type, "float")
+        self.assertEqual(len(value_1_field.allowable_values), 2)
         
-#         value_2_field = data_description[2]
-#         self.assertEqual(value_2_field.name, "value_2")
-#         self.assertEqual(value_2_field.data_type, "integer")
-#         self.assertEqual(len(value_2_field.allowable_values), 2)
+        value_2_field = data_description[2]
+        self.assertEqual(value_2_field.name, "integer_1")
+        self.assertEqual(value_2_field.data_type, "integer")
+        self.assertEqual(len(value_2_field.allowable_values), 2)
         
-#         # Test specific batch configuration values
-#         batch_config = config.batch_configs[0]
-#         self.assertEqual(batch_config.name, "batch")
-#         self.assertEqual(batch_config.interval, 30)
-#         self.assertEqual(batch_config.size, 1000)
-#         self.assertEqual(batch_config.filetype, "json")
-#         self.assertFalse(batch_config.randomise)
+        # Test specific batch configuration values
+        batch_config = config.batch_configs[0]
+        self.assertEqual(batch_config.name, "batch_local")
+        self.assertEqual(batch_config.interval, 30)
+        self.assertEqual(batch_config.size, 1000)
+        self.assertEqual(batch_config.filetype, "json")
+        self.assertFalse(batch_config.randomise)
         
-#         # Test batch connection details
-#         batch_connection = batch_config.connection
-#         self.assertEqual(batch_connection.service, "local")
-#         self.assertEqual(batch_connection.port, "8080")
-#         self.assertEqual(batch_connection.folder_path, "your-folder-path")
+        # Test batch connection details
+        batch_connection = batch_config.connection
+        self.assertEqual(batch_connection.service, "local")
+        self.assertEqual(batch_connection.port, "8080")
+        self.assertEqual(batch_connection.folder_path, "your-folder-path")
         
-#         # Test data description for batch
-#         batch_data_description = batch_config.data_description
-#         self.assertEqual(len(batch_data_description), 2)
+        # Test data description for batch
+        batch_data_description = batch_config.data_description
+        self.assertEqual(len(batch_data_description), 6)
         
-#         # Validate individual data fields in the batch config
-#         sensor_id_field = batch_data_description[0]
-#         self.assertEqual(sensor_id_field.name, "sensor_id")
-#         self.assertEqual(sensor_id_field.data_type, "category")
-#         self.assertEqual(len(sensor_id_field.allowable_values), 3)
+        # Validate individual data fields in the batch config
+        sensor_id_field = batch_data_description[0]
+        self.assertEqual(sensor_id_field.name, "sensor_id")
+        self.assertEqual(sensor_id_field.data_type, "category")
+        self.assertEqual(len(sensor_id_field.allowable_values), 3)
         
-#         value_field = batch_data_description[1]
-#         self.assertEqual(value_field.name, "value")
-#         self.assertEqual(value_field.data_type, "float")
-#         self.assertEqual(len(value_field.allowable_values), 2)
+        value_field = batch_data_description[1]
+        self.assertEqual(value_field.name, "float_1")
+        self.assertEqual(value_field.data_type, "float")
+        self.assertEqual(len(value_field.allowable_values), 2)
 
-#         # Test the overall length of the config's root fields
-#         self.assertEqual(len(config.streaming_configs[0].data_description), 3)
-#         self.assertEqual(len(config.batch_configs[0].data_description), 2)
+        # Test the overall length of the config's root fields
+        self.assertEqual(len(config.streaming_configs[0].data_description), 6)
+        self.assertEqual(len(config.batch_configs[0].data_description), 6)
 
-#         # Test the data_description field of each config for type consistency (e.g., DataField)
-#         for field in config.streaming_configs[0].data_description:
-#             self.assertTrue(isinstance(field, DATA_FIELD_TYPES))  # Ensure fields are instances of DataField classes (e.g., CategoryField, IntegerField, etc.)
+        # Test the data_description field of each config for type consistency (e.g., DataField)
+        for field in config.streaming_configs[0].data_description:
+            self.assertTrue(isinstance(field, DATA_FIELD_TYPES))  # Ensure fields are instances of DataField classes (e.g., CategoryField, IntegerField, etc.)
         
-#         for field in config.batch_configs[0].data_description:
-#             self.assertTrue(isinstance(field, DATA_FIELD_TYPES))  # Same check for batch config data fields
+        for field in config.batch_configs[0].data_description:
+            self.assertTrue(isinstance(field, DATA_FIELD_TYPES))  # Same check for batch config data fields
 
 
-#     def test_missing_file(self):
-#         """Test if FileNotFoundError is raised for a missing config file."""
-#         with self.assertRaises(FileNotFoundError):
-#             Config.from_json('non_existent_config.json')
+    def test_missing_file(self):
+        """Test if FileNotFoundError is raised for a missing config file."""
+        with self.assertRaises(FileNotFoundError):
+            Config.from_json('non_existent_config.json')
 
-#     def test_invalid_json(self):
-#         """Test if json.JSONDecodeError is raised for an invalid JSON file."""
-#         invalid_config_path = os.path.join(os.path.dirname(__file__), 'invalid_config.json')
-#         with open(invalid_config_path, 'w') as f:
-#             f.write("{ invalid_json }")  # Invalid JSON
+    def test_invalid_json(self):
+        """Test if json.JSONDecodeError is raised for an invalid JSON file."""
+        invalid_config_path = os.path.join(os.path.dirname(__file__), 'invalid_config.json')
+        with open(invalid_config_path, 'w') as f:
+            f.write("{ invalid_json }")  # Invalid JSON
         
-#         with self.assertRaises(json.JSONDecodeError):
-#             Config.from_json(invalid_config_path)
+        with self.assertRaises(json.JSONDecodeError):
+            Config.from_json(invalid_config_path)
         
-#         # Cleanup
-#         os.remove(invalid_config_path)
+        # Cleanup
+        os.remove(invalid_config_path)
 
-#     def test_config_with_all_required_keys(self):
-#         # This test should pass without any exceptions
-#         config = Config.from_dict(TEST_CONFIG_DICT)
-#         assert config.version == "2.0"
+    def test_config_with_all_required_keys(self):
+        # This test should pass without any exceptions
+        config = Config.from_dict(TEST_CONFIG_DICT)
+        assert config.version == "2.0"
 
-#     def test_missing_version(self):
-#         config_data = TEST_CONFIG_DICT.copy()
-#         del config_data["version"]  # Remove the 'version' key
-#         with self.assertRaises(ValidationError) as context:
-#             Config.from_dict(config_data)
-#         self.assertIn("version", str(context.exception))
+    def test_missing_version(self):
+        config_data = TEST_CONFIG_DICT.copy()
+        del config_data["version"]  # Remove the 'version' key
+        with self.assertRaises(ValidationError) as context:
+            Config.from_dict(config_data)
+        self.assertIn("version", str(context.exception))
 
 
 
@@ -447,6 +447,85 @@ class TestDataModels(unittest.TestCase):
         with self.assertRaises(ValidationError):
             _ = DateTimeField(**datetime_field)
 
+    
+class TestBatchLocalCreds(unittest.TestCase):
+    def test_local_creds_has_service(self):
+        creds = TEST_LOCAL_BATCH_CREDS.copy()
+        del creds['service']
+        with self.assertRaises(ValidationError):
+            _ = BatchLocalCreds(**creds)
+
+    def test_local_creds_has_port(self):
+        creds = TEST_LOCAL_BATCH_CREDS.copy()
+        del creds['port']
+        with self.assertRaises(ValidationError):
+            _ = BatchLocalCreds(**creds)
+
+    def test_local_creds_has_folder_path(self):
+        creds = TEST_LOCAL_BATCH_CREDS.copy()
+        del creds['folder_path']
+        # Optional field, should not raise an error
+        model_instance = BatchLocalCreds(**creds)
+        self.assertEqual(model_instance.folder_path, '')
+
+
+class TestBatchConnectionCredsGCP(unittest.TestCase):
+    def test_gcp_creds_has_service(self):
+        creds = TEST_GCP_STORAGE_BATCH_CREDS.copy()
+        del creds['service']
+        with self.assertRaises(ValidationError):
+            _ = BatchConnectionCredsGCP(**creds)
+
+    def test_gcp_creds_has_project_id(self):
+        creds = TEST_GCP_STORAGE_BATCH_CREDS.copy()
+        del creds['project_id']
+        with self.assertRaises(ValidationError):
+            _ = BatchConnectionCredsGCP(**creds)
+
+    def test_gcp_creds_has_bucket_name(self):
+        creds = TEST_GCP_STORAGE_BATCH_CREDS.copy()
+        del creds['bucket_name']
+        with self.assertRaises(ValidationError):
+            _ = BatchConnectionCredsGCP(**creds)
+
+    def test_gcp_creds_has_credentials_path(self):
+        creds = TEST_GCP_STORAGE_BATCH_CREDS.copy()
+        del creds['credentials_path']
+        with self.assertRaises(ValidationError):
+            _ = BatchConnectionCredsGCP(**creds)
+
+    def test_gcp_creds_folder_path_optional(self):
+        creds = TEST_GCP_STORAGE_BATCH_CREDS.copy()
+        del creds['folder_path']
+        # Optional field, should not raise an error
+        model_instance = BatchConnectionCredsGCP(**creds)
+        self.assertEqual(model_instance.folder_path, '')
+
+
+class TestStreamingConnectionCredsPubSub(unittest.TestCase):
+    def test_pubsub_creds_has_service(self):
+        creds = TEST_PUBSUB_STREAMING_CREDS.copy()
+        del creds['service']
+        with self.assertRaises(ValidationError):
+            _ = StreamingConnectionCredsPubSub(**creds)
+
+    def test_pubsub_creds_has_project_id(self):
+        creds = TEST_PUBSUB_STREAMING_CREDS.copy()
+        del creds['project_id']
+        with self.assertRaises(ValidationError):
+            _ = StreamingConnectionCredsPubSub(**creds)
+
+    def test_pubsub_creds_has_topic_id(self):
+        creds = TEST_PUBSUB_STREAMING_CREDS.copy()
+        del creds['topic_id']
+        with self.assertRaises(ValidationError):
+            _ = StreamingConnectionCredsPubSub(**creds)
+
+    def test_pubsub_creds_has_credentials_path(self):
+        creds = TEST_PUBSUB_STREAMING_CREDS.copy()
+        del creds['credentials_path']
+        with self.assertRaises(ValidationError):
+            _ = StreamingConnectionCredsPubSub(**creds)
     
 
 if __name__ == '__main__':
