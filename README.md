@@ -26,7 +26,7 @@ It's useful for Data Engineers who want to test their streaming and batch proces
 1. Clone the repository:
 
 ```bash
-   git clone https://github.com/yourusername/fake_data_service.git
+   git clone https://github.com/richard-muir/fakeout.git
 ```
 
 ### Supported Services
