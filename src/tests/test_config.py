@@ -28,7 +28,7 @@ class TestConfig(unittest.TestCase):
 
     def test_load_config(self):
         """Test if the configuration loads correctly."""
-        config = Config(self.test_config_path)
+        config = Config.from_json(self.test_config_path)
         self.assertEqual(config.streaming_interval, 5)
         self.assertEqual(config.batch_file_name, "data_batch")
         self.assertEqual(config.batch_interval, 900)
@@ -37,7 +37,7 @@ class TestConfig(unittest.TestCase):
     def test_missing_file(self):
         """Test if FileNotFoundError is raised for a missing config file."""
         with self.assertRaises(FileNotFoundError):
-            Config('non_existent_config.json')
+            Config.from_json('non_existent_config.json')
 
     def test_invalid_json(self):
         """Test if json.JSONDecodeError is raised for an invalid JSON file."""
@@ -46,7 +46,7 @@ class TestConfig(unittest.TestCase):
             f.write("{ invalid_json }")  # Invalid JSON
         
         with self.assertRaises(json.JSONDecodeError):
-            Config(invalid_config_path)
+            Config.from_json(invalid_config_path)
         
         # Cleanup
         os.remove(invalid_config_path)
