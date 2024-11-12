@@ -5,3 +5,4 @@ pytest==7.1.2           # For running tests
 google-cloud-pubsub     # To handle interactions with pub/sub
 google-cloud-storage    # To handle interactions with storage
 pydantic                # JSON schema validation
+unittest
